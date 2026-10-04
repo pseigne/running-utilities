@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f7f2" />
+    <meta name="description" content="Plan your weekly running mileage and calculate race splits. Two simple tools, one place." />
+    <title>Running Utilities — Mileage & Track Splits</title>
+    <script>
+      try { const t = localStorage.getItem('running-utilities.theme'); document.documentElement.dataset.theme = ['light','dark'].includes(t) ? t : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); } catch { document.documentElement.dataset.theme = 'light'; }
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to calculator</a>
+    <div class="site">
+      <header class="site-header">
+        <a class="wordmark" href="#weekly-mileage"><span class="brand-mark" aria-hidden="true">r.</span>Running Utilities</a>
+        <button id="theme-toggle" class="quiet-button" type="button">Dark mode</button>
+      </header>
+      <main id="main">
+        <div class="intro"><p class="eyebrow">A little structure for your next run.</p><h1>Make the miles count.</h1><p>Plan your week. Find your rhythm on the track.</p></div>
+        <nav class="tool-nav" aria-label="Running tools">
+          <a href="#weekly-mileage" data-tool="weekly-mileage">Weekly Mileage</a>
+          <a href="#track-splits" data-tool="track-splits">Track Splits</a>
+        </nav>
+        <section id="weekly-mileage" class="tool" aria-labelledby="mileage-heading">
+          <div class="tool-heading"><div><h2 id="mileage-heading">Your week, in miles.</h2><p>Set a goal and give every day its place.</p></div><button class="quiet-button" id="reset-mileage" type="button">Reset week</button></div>
+          <div class="mileage-layout">
+            <div class="panel planner-panel">
+              <div class="panel-heading"><h3>Weekly plan</h3><span>Monday — Sunday</span></div>
+              <div class="goal-field"><label for="goal-mileage">Weekly goal <span>miles</span></label><input id="goal-mileage" type="number" min="0" max="100000" step="any" placeholder="50" inputmode="decimal" /></div>
+              <div id="days" class="days"></div>
+              <p class="field-note">Leave a day blank to fill it automatically. Enter 0 for a rest day.</p>
+              <button class="primary-button" id="distribute" type="button">Distribute remaining miles <span aria-hidden="true">↗</span></button>
+              <p class="feedback" id="mileage-feedback" role="status" aria-live="polite"></p>
+            </div>
+            <div class="panel chart-panel">
+              <div class="panel-heading"><h3>The week ahead</h3><span>Daily mileage</span></div>
+              <div class="summary"><div><span class="metric-label">Planned</span><p><strong id="planned-total">0</strong><span> mi</span></p></div><div><span class="metric-label" id="remaining-label">Remaining</span><p><strong id="remaining-total">—</strong><span> mi</span></p></div></div>
+              <div class="chart-wrap"><canvas id="mileage-chart" role="img" aria-label="Daily planned mileage"></canvas></div>
+              <div class="chart-footer"><span id="week-summary">Set a weekly goal to get started.</span><span>Small steps. Full weeks.</span></div>
+            </div>
+          </div>
+        </section>
+        <section id="track-splits" class="tool" aria-labelledby="splits-heading" hidden>
+          <div class="tool-heading"><div><h2 id="splits-heading">Find your race rhythm.</h2><p>Even pace, from the first bend to the finish.</p></div><button class="quiet-button" id="reset-splits" type="button">Reset splits</button></div>
+          <div class="splits-layout">
+            <div class="panel split-inputs">
+              <h3>Your target</h3>
+              <fieldset><legend>Finish time</legend><div class="time-inputs">
+                <label><input id="goal-hours" type="number" min="0" max="99" step="1" inputmode="numeric" placeholder="0" />Hours</label>
+                <label><input id="goal-minutes" type="number" min="0" max="59" step="1" inputmode="numeric" placeholder="0" />Minutes</label>
+                <label><input id="goal-seconds" type="number" min="0" max="59.99" step="0.01" inputmode="decimal" placeholder="0" />Seconds</label>
+              </div></fieldset>
+              <fieldset><legend>Race distance</legend><div id="event-options" class="choice-grid"></div><label id="custom-distance-label" class="custom-field" hidden>Custom race distance <span>meters</span><input id="custom-distance" type="number" min="1" max="100000" step="any" inputmode="decimal" placeholder="1200" /></label></fieldset>
+              <fieldset><legend>Track length</legend><div class="choice-grid track-choices">
+                <label class="choice"><input type="radio" name="track" value="200" /><span>200m</span></label>
+                <label class="choice"><input type="radio" name="track" value="400" checked /><span>400m</span></label>
+                <label class="choice"><input type="radio" name="track" value="custom" /><span>Other</span></label>
+              </div><label id="custom-track-label" class="custom-field" hidden>Custom track length <span>meters</span><input id="custom-track" type="number" min="1" max="100000" step="any" inputmode="decimal" placeholder="300" /></label></fieldset>
+              <p class="feedback" id="splits-feedback" role="status" aria-live="polite">Enter a finish time to see your splits.</p>
+            </div>
+            <div class="panel split-results">
+              <div class="panel-heading"><h3>Your splits</h3><span id="split-count">Even pace</span></div>
+              <div class="race-summary"><span class="metric-label">Target finish</span><strong id="finish-time">—</strong><p id="race-description">Your next finish line starts here.</p></div>
+              <div id="split-empty" class="empty-state"><span class="empty-line" aria-hidden="true"></span><p>Pick your distance.<br>We’ll take care of the laps.</p></div>
+              <div class="table-wrap" id="split-table-wrap" hidden><table><caption class="sr-only">Even-paced race splits</caption><thead><tr><th scope="col">Lap</th><th scope="col">Distance</th><th scope="col">Split</th><th scope="col">Cumulative</th></tr></thead><tbody id="split-rows"></tbody></table></div>
+              <p class="field-note">For uneven lap counts, the opening split covers the partial lap to the first finish-line crossing.</p>
+            </div>
+          </div>
+        </section>
+        <p class="save-note" id="save-note">Your inputs are saved in this browser.</p>
+      </main>
+      <footer><span>Built for the everyday runner.</span><div><a href="https://pierceseigne.com/">Pierce Seigne</a><a href="https://github.com/pseigne/running-utilities">Source code <span aria-hidden="true">↗</span></a></div></footer>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
