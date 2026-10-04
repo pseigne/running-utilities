@@ -1,0 +1,228 @@
+:root {
+    --color-primary: hsl(185, 50%, 90%);
+    --color-secondary: hsl(185, 50%, 10%);
+    --color-tertiary: hsl(245, 80%, 20%);
+    --color-accent: hsl(125, 80%, 20%);
+    --color-card: hsl(185, 50%, 98%);
+    
+    /* shadows */
+    --shadow-s: inset 0 1px 2px #ffffff30, 0 1px 2px #00000030, 0 2px 4px #00000015;
+}
+
+.dark {
+    --color-primary: hsl(185, 50%, 10%);
+    --color-secondary: hsl(185, 50%, 90%);
+    --color-tertiary: hsl(245, 80%, 80%);
+    --color-accent: hsl(125, 80%, 80%);
+    --color-card: hsl(185, 50%, 20%);
+    --shadow-s: inset 0 1px 2px #ffffff15, 0 1px 2px #00000050, 0 2px 4px #00000030;
+}
+
+
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--color-primary);
+    min-height: 100vh;
+    padding: 40px 20px;
+    color: var(--color-secondary);
+    border-radius: 10px;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    border-radius: 10px;
+}
+
+h1 {
+    text-align: center;
+    color: var(--color-secondary);
+    margin-bottom: 40px;
+    font-size: 1.8em;
+    font-weight: 1000;
+    letter-spacing: -0.5px;
+}
+
+section {
+    background: var(--color-card);
+    border-radius: 10px;
+    padding: 30px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-s);
+}
+
+/* Graph Section */
+#myChart {
+    max-height: 280px;
+    justify-content: center;
+}
+
+canvas {
+    filter: brightness(1);
+}
+
+/* Inputs Section */
+#days {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.day {
+    flex: 1;
+    min-width: 75px;
+}
+
+.day label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-weight: 400;
+    color: var(--color-secondary);
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+input {
+    border: 2px solid transparent;
+    background-color: var(--color-card);
+    color: var(--color-secondary);
+    border-radius: 10px;
+    transition: ease-in-out 0.2s;
+    box-shadow: var(--shadow-s);
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--color-tertiary);
+    transition: ease-in-out 0.2s;
+}
+
+input:hover {
+    box-shadow: var(--shadow-s);
+}
+
+.day input {
+    width: 100%;
+    padding: 8px;
+    font-size: 15px;
+    text-align: center;
+}
+
+
+.goal-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.goal-section label {
+    font-weight: 400;
+    color: var(--color-secondary);
+    font-size: 15px;
+}
+
+#goal-mileage {
+    flex: 1;
+    min-width: 150px;
+    padding: 10px;
+    font-size: 15px;
+    box-shadow: var(--shadow-s);
+}
+
+#calculate-button {
+    width: 100%;
+    padding: 12px;
+    background: var(--color-accent);
+    color: var(--color-primary);
+    border: none;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: ease-in-out 100ms;
+    box-shadow: var(--shadow-s);
+}
+
+#calculate-button:hover {
+    opacity: 0.9;
+    box-shadow: var(--shadow-s);
+    transition: ease-in-out 100ms;
+}
+
+/* Outputs Section */
+#output-section {
+    text-align: center;
+    background: var(--color-card);
+    box-shadow: var(--shadow-s);
+}
+
+#output-section h3 {
+    font-size: 1em;
+    font-weight: 400;
+    color: var(--color-secondary);
+    margin-bottom: 5px;
+}
+
+#remaining-mileage {
+    font-weight: 700;
+    font-size: 2em;
+    color: var(--color-secondary);
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.5em;
+    }
+
+    section {
+        padding: 20px;
+    }
+
+    #days {
+        gap: 10px;
+    }
+}
+
+footer {
+    margin-top: 40px;
+    padding: 20px;
+    text-align: center;
+    color: var(--color-secondary);
+    opacity: 0.5;
+    font-size: 14px;
+}
+
+/* Dark Mode Overrides */
+body.dark {
+    background: var(--color-primary);
+    color: var(--color-secondary);
+}
+.container.dark {
+    color: var(--color-card);
+}
+
+body.dark h1 {
+    color: var(--color-secondary);
+}
+
+body.dark .day label {
+    color: var(--color-secondary);
+}
+
+body.dark canvas {
+    filter: brightness(0.9);
+}

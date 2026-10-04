@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Mileage Planner</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <script src="engine.js"></script>
+</head>
+
+<body>
+    <button id="theme-toggle"
+        style="position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 1.5rem; cursor: pointer;">🌙</button>
+    <div class="container">
+        <h1>Weekly Mileage Planner</h1>
+
+        <!-- GRAPH -->
+        <section id="graph-section">
+            <div>
+                <canvas id="myChart"></canvas>
+            </div>
+        </section>
+
+        <!-- INPUTS -->
+        <section>
+            <div id="days"></div>
+
+            <div class="goal-section">
+                <label>Goal Mileage</label>
+                <input id="goal-mileage" type="number" placeholder="0">
+            </div>
+
+            <button id="calculate-button" onclick="distributeRemaining()">
+                ⚡️ Distribute Remaining Mileage
+            </button>
+        </section>
+
+        <!-- OUTPUTS -->
+        <section id="output-section">
+            <h3>Remaining Mileage</h3>
+            <h2 id="remaining-mileage">0</span>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const toggleBtn = document.getElementById('theme-toggle');
+
+        function updateChartColors() {
+            const isDark = document.body.classList.contains('dark');
+            const textColor = isDark ? '#e6e6e6' : '#1a1a1a';
+            const gridColor = isDark ? '#333333' : '#e0e0e0';
+            const barColor = isDark ? '#a3f5aa' : '#0a5c11';
+
+            myChart.options.plugins.legend.labels.color = textColor;
+            myChart.options.scales.y.ticks.color = textColor;
+            myChart.options.scales.x.ticks.color = textColor;
+            myChart.options.scales.y.grid.color = gridColor;
+            myChart.options.scales.x.grid.color = gridColor;
+            myChart.data.datasets[0].backgroundColor = barColor;
+
+            myChart.update();
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark');
+            toggleBtn.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+            updateChartColors();
+        });
+
+
+        // Check system preference on page load
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('dark');
+        }
+
+        // Update toggle button text based on current theme
+        toggleBtn.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+    </script>
+    <footer>Designed & Built by <a href="https://pseigne.github.io/website/index.html">Pierce Seigne</a>. View Source on
+        <a href="https://github.com/pseigne/weekly-mileage-planner">GitHub</a>.</footer>
+
+</body>
+
+</html>

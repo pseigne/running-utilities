@@ -1,0 +1,18 @@
+{
+  "weekly-mileage": {
+    "originalCommit": "c818a2c061892046ea13db50b7b15563e5c12cba",
+    "sha256": {
+      "index.html": "18fb36bf0e1b0e6b19af10cc0eb731de829da9535b2f87c7baecd26127a5cef8",
+      "styles.css": "a780f0fd3c38d0933f0875075c2b45a785a860bda3e51322d4539b8ae1fc06af",
+      "engine.js": "8892ac286b1951ec43c76fe9745b162e473aed65470b32973c559c200fb552b6"
+    }
+  },
+  "track-splits": {
+    "originalCommit": "c0a14d7277739cd3b13aab0cf1aa8a9e17e30bab",
+    "sha256": {
+      "index.html": "5f85866244d21fdb516ed67650857a9b3fa978bdf6ef7a93c9efefa996c7f379",
+      "styles.css": "2686173c45c85b3dcd128ed51dbe1bd29c68d34d7fa2a5027f8f434187ad40f5",
+      "engine.js": "8c0c99744dbf90762f0b067de04d38d81ae8a0a8c1baec7fb87dcb91da2e019e"
+    }
+  }
+}

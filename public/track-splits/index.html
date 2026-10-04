@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <title>Track Split Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<script src="engine.js"></script>
+
+
+
+
+<body>
+
+
+
+    <div class="main-card">
+        <h1>Track Split Calculator</h1>
+        <!-- <button class="settings">Settings</button> -->
+
+        <h3 id="target-time-heading">
+
+            ⏱️ Target Time
+        </h3>
+        <div id="goal_input">
+
+            <div class="target-time-input">
+                <input id="goal_hours" type="number" min="0">
+                <label for="goal_hours">Hours</label>
+            </div>
+
+            <div class="target-time-input">
+                <input id="goal_minutes" type="number" min="0" max="59">
+                <label for="goal_minutes">Minutes</label>
+            </div>
+            <div class="target-time-input">
+                <input id="goal_seconds" type="number" min="0" max="59.99">
+                <label for="goal_seconds">Seconds</label>
+            </div>
+        </div>
+
+
+
+
+        <h3 id="distance-heading">
+            📏 Race Distance
+        </h3>
+
+
+        <div id="event-buttons" class="event-buttons">
+
+        </div>
+
+
+        <div id="custom-distance-div">
+            <!-- <h5>Custom Distance (meters):</h5>
+            <input id="custom-distance" type="number" min="1" step="1" placeholder="e.g. 1200"> -->
+        </div>
+
+
+
+        <div class="settings">
+            <p>Track Length: </p>
+            <div>
+                <!-- <label><input type="radio" name="track-length" value="100"> 100m</label> -->
+                <label><input type="radio" name="track-length" value="200"> 200m</label>
+                <label><input type="radio" name="track-length" value="400" checked> 400m</label>
+                <label for="radio-custom">
+                    <input type="radio" name="track-length" id="radio-custom" value="custom">
+                    Other
+                </label>
+            </div>
+            <div id="custom-track-div"></div>
+        </div>
+
+        <div id="scroll-to-see">
+            [ Scroll to See Splits ]
+        </div>
+
+    </div>
+
+
+
+    <table id="result">
+
+    </table>
+
+
+    <footer>Designed & Built by <a href="https://pseigne.github.io/website/index.html">Pierce Seigne</a>. View Source on
+        <a href="https://github.com/pseigne/track-split-calculator">GitHub</a>.
+    </footer>
+
+
+
+
+
+</body>
+
+</html>

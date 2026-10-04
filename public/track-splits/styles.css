@@ -1,0 +1,414 @@
+:root {
+    --color-primary: hsl(360, 50%, 90%);
+    --color-card: hsl(360, 50%, 95%);
+    --color-secondary: hsl(360, 50%, 10%);
+    --color-tertiary: hsl(360, 50%, 90%);
+    --color-accent: hsl(300, 80%, 20%);
+
+    /* Shadows */
+    --shadow-s: 0 1px 2px rgba(0, 0, 0, 0.1);
+    --shadow-m: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-l: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 0.625rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 10px;
+    --radius-lg: 12px;
+    --radius-xl: 24px;
+
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+}
+
+.dark {
+    --color-primary: hsl(360, 50%, 10%);
+    --color-secondary: hsl(360, 50%, 90%);
+    --color-tertiary: hsl(60, 80%, 80%);
+    --color-accent: hsl(300, 80%, 80%);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--color-primary);
+    color: var(--color-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin: 0 auto;
+    width: 80%;
+    min-height: 100vh;
+    padding: var(--spacing-md);
+}
+
+h1 {
+    font-size: 32px;
+    margin: var(--spacing-lg) 0;
+    font-weight: 1000;
+}
+
+h3 {
+    margin: var(--spacing-md) 0 var(--spacing-sm);
+}
+
+h5 {
+    font-weight: normal;
+    margin: var(--spacing-xs) 0;
+}
+
+/* Main Card */
+.main-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--color-card);
+    max-width: 6in;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-m);
+    padding: var(--spacing-md);
+    width: 100%;
+}
+
+/* Input Styles */
+input[type="number"] {
+    border: 0;
+    background-color: var(--color-primary);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    font-size: 16px;
+    transition: all var(--transition-normal);
+    box-shadow: var(--shadow-s);
+}
+
+input[type="number"]:hover {
+    box-shadow: var(--shadow-m);
+}
+
+input[type="number"]:focus {
+    outline: none;
+    background-color: var(--color-tertiary);
+    border: 3px solid var(--color-secondary);
+}
+
+/* Target Time Input Section */
+#goal_input {
+    display: flex;
+    gap: 20px;
+    margin-bottom: var(--spacing-md);
+}
+
+.target-time-input {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.target-time-input input {
+    width: 100px;
+}
+
+.target-time-input label {
+    margin-top: var(--spacing-sm);
+    font-weight: normal;
+    color: var(--color-secondary);
+}
+
+/* Icon Headings */
+#target-time-heading i,
+#distance-heading i {
+    margin-right: var(--spacing-xs);
+    color: var(--color-accent);
+    font-size: 1.2em;
+    vertical-align: bottom;
+}
+
+/* Event Buttons */
+.event-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    justify-content: center;
+    width: 100%;
+    margin-bottom: var(--spacing-md);
+}
+
+.event-buttons input[type="radio"] {
+    display: none;
+}
+
+.event-buttons label {
+    padding: 14px 8px;
+    border: none;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    background-color: var(--color-primary);
+    color: var(--color-secondary);
+    transition: all var(--transition-fast);
+    text-align: center;
+    font-size: 14px;
+    box-shadow: var(--shadow-s);
+}
+
+.event-buttons label:hover {
+    background-color: var(--color-accent);
+    color: var(--color-primary);
+}
+
+.event-buttons label:has(input:checked) {
+    background-color: var(--color-accent);
+    color: var(--color-primary);
+}
+
+.event-buttons label:has(input:checked):hover {
+    box-shadow: var(--shadow-m);
+}
+
+/* Custom Distance */
+#custom-distance-div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+ 
+}
+
+#custom-distance {
+    width: 100%;
+    max-width: 300px;
+}
+
+/* Settings Section */
+.settings {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: var(--spacing-md);
+}
+
+.settings p {
+    color: var(--color-secondary);
+    font-size: 13px;
+    margin-bottom: var(--spacing-sm);
+}
+
+.settings>div {
+    display: flex;
+    gap: var(--spacing-sm);
+    width: 100%;
+}
+
+.settings label {
+    flex: 1;
+    background-color: var(--color-primary);
+    padding: 12px;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    text-align: center;
+    transition: all var(--transition-fast);
+    color: var(--color-secondary);
+    font-size: 14px;
+    box-shadow: var(--shadow-s);
+}
+
+.settings label:hover {
+    background-color: var(--color-accent);
+    color: var(--color-primary)
+}
+
+.settings input[type="radio"] {
+    display: none;
+}
+
+.settings label:has(input:checked) {
+    background-color: var(--color-accent);
+    color: var(--color-primary);
+}
+
+/* Custom Track Length Input */
+#custom-track-div {
+    display: flex;
+    justify-content: center;
+    
+    width: 100%;
+    margin-top: var(--spacing-md);
+}
+
+#custom-track-input {
+    width: 100%;
+    max-width: 200px;
+    background-color: var(--color-primary);
+    border: 0;
+    border-radius: var(--radius-md);
+    padding: 12px;
+    font-size: 14px;
+    transition: all var(--transition-normal);
+    box-shadow: var(--shadow-s);
+    color: var(--color-secondary);
+    margin: 10px;
+}
+
+#custom-track-input:hover {
+    box-shadow: var(--shadow-m);
+}
+
+#custom-track-input:focus {
+    outline: none;
+    background-color: var(--color-tertiary);
+    border: 3px solid var(--color-secondary);
+}
+
+/* Results Table */
+#result {
+    margin-top: var(--spacing-lg);
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 6in;
+    background-color: var(--color-secondary);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-m);
+    font-size: 15px;
+    
+}
+
+#result thead {
+    background-color: var(--color-accent);
+    color: var(--color-primary);
+}
+
+#result th {
+    padding: 12px 14px;
+    text-align: left;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+}
+
+#result tbody tr {
+    border-bottom: 1px solid var(--color-tertiary);
+    background-color: var(--color-card);
+    transition: background-color var(--transition-fast);
+    font-family: monospace;
+}
+
+#result tbody tr:last-child {
+    border-bottom: none;
+}
+
+#result tbody tr:hover {
+    background-color: var(--color-primary);
+}
+
+#result td {
+    padding: 12px 14px;
+}
+
+#result td:nth-child(1),
+#result td:nth-child(2) {
+    font-weight: 600;
+}
+
+#result td:nth-child(4) {
+    font-family: monospace;
+    font-weight: 600;
+}
+
+#scroll-to-see {
+    margin-top: 10px;
+    opacity: 0;
+    color: rgba(0, 0, 0, 0.5)
+}
+
+
+
+
+/* Responsive Design */
+@media (max-width: 700px) {
+    body {
+        width: 100%;
+        padding: 0;
+        background-color: var(--color-card);
+    }
+    
+
+    .main-card {
+        border-radius: 0;
+        /* min-height: 100vh; */
+        padding: 20px;
+        opacity: 1;
+        background-color: #ffffff00;
+    }
+
+    .event-buttons {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    h1 {
+        font-size: 28px;
+        margin: var(--spacing-xs);
+    }
+
+    #goal_input {
+        gap: 10px;
+    }
+
+
+    #scroll-to-see {
+        opacity: 1;
+    }
+}
+
+
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px 20px;
+    color: rgba(0, 0, 0, 0.5);
+    background: var(--color-primary);
+    text-align: center;
+    font-size: 13px;
+    border-top: 1px solid var(--color-tertiary);
+    z-index: 10;
+}
+
+footer a {
+    color: var(--color-secondary);
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    text-decoration: underline;
+}
+
+footer a:hover {
+    color: var(--color-accent);
+}
+
+
+body {
+    padding-bottom: 100px;
+}
+
+@media (max-width: 700px) {
+    footer {
+        padding: 12px 16px;
+        font-size: 11px;
+    }
+    
+    body {
+        padding-bottom: 80px;
+    }
+}
