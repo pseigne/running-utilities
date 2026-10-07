@@ -2,7 +2,7 @@
 
 The original **Weekly Mileage Planner** and **Track Split Calculator**, in two tabs at **https://pierceseigne.com/running-utilities/**.
 
-Each tool keeps its original HTML, CSS, JavaScript, colors, layout, controls, and calculation behavior. A small tab bar switches between independent iframe pages, preserving their inputs while the page remains open. The original mileage planner retains its own theme toggle. Hash links (`#weekly-mileage` and `#track-splits`) support direct links and browser history.
+Each tool keeps its original HTML, CSS, JavaScript, colors, layout, controls, and calculation behavior. A small tab bar switches between independent iframe pages, preserving their inputs while the page remains open. The original mileage planner retains its own theme toggle. Hash links (`#weekly-mileage` and `#track-splits`) support direct links and browser history. The tab page retargets the original footer links so the portfolio link opens at the top level and GitHub opens in a new tab, without editing the archived files.
 
 The original projects' source files are copied without modification into `public/weekly-mileage` and `public/track-splits`. `original-sources.json` records their original commits and SHA-256 checksums; tests verify those files remain unchanged. Chart.js and Font Awesome load from the original CDN URLs. The local Chart.js dependency is only used to make browser tests independent of CDN availability.
 

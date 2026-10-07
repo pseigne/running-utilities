@@ -60,3 +60,13 @@ test('original desktop and mobile views render without browser errors', async ({
   }
   expect(errors).toEqual([]);
 });
+
+test('original footer links leave the tool frame', async ({ page }) => {
+  await page.goto('');
+  for (const title of ['Weekly Mileage Planner', 'Track Split Calculator']) {
+    const footer = page.frameLocator(`iframe[title="${title}"]`).locator('footer');
+    await expect(footer.locator('a', { hasText: 'Pierce Seigne' })).toHaveAttribute('target', '_top');
+    await expect(footer.locator('a', { hasText: 'Pierce Seigne' })).toHaveAttribute('href', 'https://pierceseigne.com/');
+    await expect(footer.locator('a', { hasText: 'GitHub' })).toHaveAttribute('target', '_blank');
+  }
+});

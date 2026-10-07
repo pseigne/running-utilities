@@ -35,6 +35,25 @@ tabs.forEach((tab, index) => {
   });
 });
 
+// The original footers predate the portfolio domain and assume a top-level page. Retarget
+// their links from here so the archived files stay byte-for-byte unchanged.
+function retargetFooterLinks(frame) {
+  for (const link of frame.contentDocument?.querySelectorAll('footer a') ?? []) {
+    if (link.hostname === 'github.com') {
+      link.target = '_blank';
+      link.rel = 'noopener';
+    } else {
+      link.href = 'https://pierceseigne.com/';
+      link.target = '_top';
+    }
+  }
+}
+
+for (const frame of document.querySelectorAll('iframe')) {
+  frame.addEventListener('load', () => retargetFooterLinks(frame));
+  if (frame.contentDocument?.readyState === 'complete') retargetFooterLinks(frame);
+}
+
 window.addEventListener('popstate', showTool);
 window.addEventListener('hashchange', showTool);
 showTool();
