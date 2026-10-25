@@ -1,0 +1,113 @@
+/* The kit's surfaces: the answer on black, the data on white, the picture on the track. Each surface
+   reassigns the tokens, so whatever sits on it picks up the right colors without knowing where it is. */
+
+/* the hero card: black, paper type, the accent in place of the line */
+.herocard{--bg:var(--hero);--ink:var(--paper);--ink-2:#A9A69F;--rule:rgba(255,255,255,.14);--sel:rgba(255,255,255,.07);--ring:#8a8a87;--line:var(--accent);background:var(--bg);color:var(--ink);border-radius:24px;padding:28px 32px 22px;margin-bottom:16px}
+@media (prefers-color-scheme: dark){ .herocard{box-shadow:0 0 0 1px rgba(255,255,255,.08)} }
+.hero{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 40px;align-items:end;margin:18px 0 0}
+.lead{max-width:30ch;font-size:20px;padding-bottom:10px;text-wrap:pretty}
+.lead b{font-weight:600}
+
+/* the one number */
+.num{font-size:144px;line-height:.86;font-weight:600;letter-spacing:-.035em;font-stretch:88%;white-space:nowrap}
+.num small{font-size:20px;letter-spacing:0;margin-left:6px;color:var(--ink-2);font-weight:400;font-stretch:100%}
+.num .sym{position:relative;top:-.45em;font-size:20px;font-weight:400;letter-spacing:0;color:var(--ink-2)}
+
+/* detail cards under the number */
+.details{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:20px}
+.detail-card{display:grid;grid-template-columns:1fr auto;grid-template-areas:"t s" "x x" "go go";gap:6px 12px;align-content:start;min-height:44px;padding:14px 16px 12px;border:1px solid var(--rule);border-radius:16px;color:inherit;text-decoration:none;text-align:left;background:transparent;transition:transform var(--fast) var(--ease),background-color var(--fast) var(--ease),border-color var(--fast) var(--ease)}
+a.detail-card:hover,button.detail-card:hover{background:var(--sel);border-color:var(--ink-2)}
+.detail-t{grid-area:t;font-size:18px;line-height:1.2;font-weight:600;font-stretch:var(--cond)}
+.detail-s{grid-area:s;align-self:center;color:var(--line)}
+.detail-x{grid-area:x;color:var(--ink-2);font-size:15px;line-height:1.4;text-wrap:pretty}
+.detail-x b{color:var(--ink);font-weight:600}
+.detail-go{grid-area:go;display:inline-flex;align-items:center;gap:6px;margin-top:2px;font-size:15px;font-weight:600}
+.detail-go svg{transition:transform var(--fast) var(--ease)}
+.detail-card:hover .detail-go svg{transform:translateX(3px)}
+
+/* the data card */
+.card{--bg:var(--card);--rule:var(--card-rule);--sel:var(--card-sel);background:var(--bg);border-radius:20px;padding:16px 16px 12px;margin-bottom:16px;box-shadow:0 0 0 1px rgba(30,25,15,.06)}
+.card-t{font-size:20px;font-weight:600;font-stretch:var(--cond);margin:4px 12px 10px}
+
+/* the track: an orange card with white lanes and white type, and one black stroke, the line */
+.trackcard{--bg:var(--track);--ink:#fff;--ink-2:rgba(255,255,255,.85);--rule:#fff;--lane:#fff;--sel:#fff;--ring:#fff;--line:#151515;background:var(--track);color:#fff;border-radius:24px;padding:16px 12px 14px;margin:0 0 16px}
+.trackcard .card-t{margin:0 8px 8px}
+.trackcard .plot{position:relative}
+.trackcard svg{display:block;width:100%;height:auto;overflow:visible;-webkit-user-select:none;user-select:none}
+.trackcard svg text{font:400 14px Archivo,system-ui,sans-serif;fill:rgba(255,255,255,.88);font-variant-numeric:tabular-nums}
+.trackcard svg text.k{fill:#fff;font-weight:600}
+.trackcard .lane{stroke:#fff;stroke-width:1.5;shape-rendering:crispEdges}
+.trackcard .the-line{stroke:#151515;stroke-width:3}
+/* caption text on the track is white: anything dimmer drops under 4.5:1 on the orange */
+.trackcard figcaption{font-size:14px;color:#fff;margin:8px 8px 0;max-width:80ch;text-wrap:pretty}
+
+/* the heat-sheet table */
+table.dt{width:100%;border-collapse:collapse}
+.dt caption.dt-cap{text-align:left;font-size:14px;color:var(--ink-2);padding:0 12px 8px}
+.dt th{font-size:14px;font-weight:400;color:var(--ink-2);text-align:left;padding:0 12px 8px}
+.dt td{padding:0 12px;height:40px;border-top:1px solid var(--rule);font-size:16px}
+.dt .r{text-align:right}
+.dt td.em{font-stretch:var(--cond);font-size:18px;font-weight:600}
+.dt td.n{font-size:18px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.dt td.q{color:var(--ink-2)}
+.dt tbody tr[data-row]:hover td{background:var(--sel)}
+.dt tr.line td{height:auto;padding:0;border:0}
+
+/* the line: the only red in a table */
+.finish{display:flex;justify-content:space-between;align-items:center;gap:2px 12px;min-height:44px;border-top:2px solid var(--line);color:var(--line);font-size:14px;padding:6px 12px 10px;background:var(--bg)}
+.finish.off{border-top-color:color-mix(in srgb, var(--line) 35%, transparent)}
+/* off, only the rule fades: faded text would drop under 4.5:1 */
+.finish b{font-weight:600}
+
+/* number fields: a visible label, a 44px box, figures that line up */
+.field{display:inline-flex;flex-direction:column;gap:4px;min-width:0}
+.field-l{font-size:14px;color:var(--ink-2)}
+.field-box{position:relative;display:flex;align-items:center;min-height:44px;border:1px solid var(--ring);border-radius:8px;background:var(--bg);transition:border-color var(--fast) var(--ease)}
+.field-box:hover{border-color:var(--ink-2)}
+.field-box:focus-within{outline:2px solid var(--line);outline-offset:2px}
+.field input{width:100%;min-width:0;min-height:42px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:var(--ink);font:600 18px/1 Archivo,system-ui,sans-serif;font-variant-numeric:tabular-nums;text-align:right}
+.field input:focus-visible{outline:none}
+.field input::placeholder{color:var(--ink-2);font-weight:400}
+.field-u{flex:none;padding-right:12px;color:var(--ink-2);font-size:14px}
+.field[data-invalid] .field-box{border-color:var(--line);border-width:2px}
+.field-hint{font-size:13px;color:var(--ink-2)}
+.field[data-invalid] .field-hint{color:var(--line)}
+/* the big field reads as the hero's number */
+.field.big .field-box{min-height:0;border-radius:16px}
+/* it is as wide as its figures, so the lead keeps its room beside it; browsers without field-sizing
+   fall back to the input's size attribute */
+.field.big input{width:auto;field-sizing:content;min-width:2ch;min-height:0;padding:6px 16px 10px;font-size:96px;line-height:.9;letter-spacing:-.03em;font-stretch:88%;text-align:left}
+.field.big .field-u{font-size:20px;padding-right:16px}
+
+@media (prefers-reduced-motion: reduce){
+  .detail-card,.detail-go svg,.field-box{transition:none}
+  .detail-card:hover .detail-go svg{transform:none}
+}
+@media (max-width: 720px){
+  .herocard{padding:20px 18px 16px;border-radius:18px;margin:0 0 12px}
+  .hero{display:block;margin:10px 0 0}
+  .num{font-size:84px}
+  .num small,.num .sym{font-size:18px}
+  .lead{font-size:18px;margin-top:10px;padding:0}
+  .details{grid-template-columns:1fr}
+  .card{padding:4px 12px 8px;border-radius:18px;margin-bottom:12px}
+  .card-t{margin:12px 0 6px}
+  .trackcard{border-radius:18px;margin-bottom:12px}
+  .field.big input{font-size:64px}
+  /* rows become a grid: a lead column, the main words over a quieter line, the figure over its note */
+  table.dt{display:block} .dt thead{display:none} .dt tbody{display:block}
+  .dt caption.dt-cap{display:block;padding:8px 0}
+  .dt tbody tr{display:grid;grid-template-columns:minmax(32px,auto) minmax(0,1fr) auto;grid-template-areas:"lead main end" "lead sub endsub";column-gap:10px;align-items:baseline;border-top:1px solid var(--rule);padding:7px 0}
+  /* rows without a lead cell give its column back */
+  .dt tbody tr:not(:has(> [data-phone="lead"])){grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"main end" "sub endsub"}
+  .dt td{display:block;height:auto;border:0;padding:0}
+  .dt td[data-phone="lead"]{grid-area:lead;color:var(--ink-2)}
+  .dt td[data-phone="main"]{grid-area:main;line-height:1.25}
+  .dt td[data-phone="sub"]{grid-area:sub;font-size:14px;color:var(--ink-2)}
+  .dt td[data-phone="end"]{grid-area:end;text-align:right;align-self:center}
+  .dt td[data-phone="endsub"]{grid-area:endsub;font-size:14px;text-align:right;color:var(--ink-2)}
+  .dt td[data-phone="hide"]{display:none}
+  .dt tbody tr.line{display:block;border:0;padding:0}
+  .dt tr.line td{display:block}
+  .card .finish{margin:0 -12px;padding-left:12px;padding-right:12px}
+}

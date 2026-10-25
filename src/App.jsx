@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Header } from './kit/Header'
 import { PillLinks } from './kit/Pills'
 import { Source } from './kit/Source'
@@ -13,12 +13,17 @@ const OUT = (
   </svg>
 )
 
+// The kit gallery exists on the dev server only; production builds leave it out.
+const Gallery = import.meta.env.DEV ? lazy(() => import('./kit/Gallery')) : null
+
 export default function App() {
-  const tool = findTool(useHash())
+  const hash = useHash()
+  const tool = findTool(hash)
+  const gallery = Boolean(Gallery) && hash === 'kit'
 
   useEffect(() => {
-    document.title = `${tool.name} · ${SITE_TITLE}`
-  }, [tool])
+    document.title = `${gallery ? 'Kit' : tool.name} · ${SITE_TITLE}`
+  }, [tool, gallery])
 
   return (
     <>
@@ -34,9 +39,10 @@ export default function App() {
             items={TOOLS.map(item => ({ key: item.slug, label: item.label, href: `#${item.slug}` }))}
             current={tool.slug}
           />
+          {gallery && <section data-tool="kit"><Suspense fallback={null}><Gallery /></Suspense></section>}
           {/* every tool stays mounted, so what was typed into one survives a visit to the other */}
           {TOOLS.map(({ slug, Component }) => (
-            <section key={slug} data-tool={slug} hidden={slug !== tool.slug}>
+            <section key={slug} data-tool={slug} hidden={gallery || slug !== tool.slug}>
               <Component />
             </section>
           ))}

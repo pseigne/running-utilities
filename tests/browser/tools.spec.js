@@ -73,11 +73,52 @@ test('phone, tablet, and desktop render without errors or sideways scrolling', a
   expect(errors).toEqual([])
 })
 
+test('the kit gallery lays out at every width', async ({ page }) => {
+  const errors = []
+  page.on('pageerror', error => errors.push(error.message))
+  for (const colorScheme of ['light', 'dark']) {
+    await page.emulateMedia({ colorScheme })
+    for (const width of [375, 768, 1440]) {
+      await page.setViewportSize({ width, height: 900 })
+      await page.goto('#kit')
+      await expect(page.getByRole('heading', { level: 1, name: 'Kit' })).toBeVisible()
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+      await page.screenshot({ path: `test-results/kit-${colorScheme}-${width}.png`, fullPage: true })
+    }
+  }
+  expect(errors).toEqual([])
+})
+
+test('kit tables turn into grids on phones and keep their heads on wider screens', async ({ page }) => {
+  await page.goto('#kit')
+  const table = page.getByRole('table', { name: 'Lap splits for a 4:00 mile' })
+  await expect(table.locator('thead')).toBeVisible()
+  await expect(table.locator('tbody tr[data-row]').first()).toHaveCSS('display', 'table-row')
+  await page.setViewportSize({ width: 375, height: 900 })
+  await expect(table.locator('thead')).toBeHidden()
+  await expect(table.locator('tbody tr[data-row]').first()).toHaveCSS('display', 'grid')
+  await expect(table.locator('.finish')).toBeVisible()
+})
+
+test('kit fields are 44px to tap and mark a wrong value in the line’s red', async ({ page }) => {
+  await page.goto('#kit')
+  for (const box of await page.locator('.field-box').all()) {
+    expect((await box.boundingBox()).height).toBeGreaterThanOrEqual(44)
+  }
+  const wrong = page.getByRole('textbox', { name: 'Wed' })
+  await expect(wrong).toHaveAttribute('aria-invalid', 'true')
+  await expect(page.locator('.field[data-invalid] .field-box')).toHaveCSS('border-top-color', 'rgb(196, 54, 27)')
+  await wrong.fill('7')
+  await expect(wrong).not.toHaveAttribute('aria-invalid')
+})
+
 for (const colorScheme of ['light', 'dark']) {
   test(`no accessibility violations in ${colorScheme} mode`, async ({ page }) => {
     await page.emulateMedia({ colorScheme })
-    for (const tool of ['weekly-mileage', 'track-splits']) {
+    for (const tool of ['weekly-mileage', 'track-splits', 'kit']) {
       await page.goto(`#${tool}`)
+      // the gallery loads lazily: wait for the shown tool's heading before checking
+      await shownTool(page).getByRole('heading', { level: 1 }).first().waitFor()
       const results = await new AxeBuilder({ page }).analyze()
       expect(results.violations.map(v => `${v.id}: ${v.nodes.map(n => n.target).join(', ')}`)).toEqual([])
     }

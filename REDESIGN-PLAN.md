@@ -54,7 +54,8 @@ src/
   tools.js                 registry: [{ slug, title, short, Component }], the only list of tools
   styles/
     tokens.css             :root tokens, light + dark, motion, type (from design.md)
-    base.css               html/body, focus, .press, skip link, and the kit's styles
+    base.css               html/body, focus, .press, skip link, nav, pills, source line
+    kit.css                the kit's surfaces: hero, cards, track, table, the line, fields
   kit/                     shared, tool-agnostic components (the reusable layer)
     Header.jsx             black nav with the curb; publishes --head; slot on the right
     Pills.jsx              pill group: links (aria-current) or radios (name/value/onChange)
@@ -68,6 +69,8 @@ src/
     DetailCard.jsx         hero sub-card: title, figure line, optional spark
     Source.jsx             source / credit line
     useMedia.js            matchMedia hook (phone/compact), as in the NCAA app
+    useHash.js             the hash, kept in step with links and history
+    Gallery.jsx            every kit component on one page; dev server only, at #kit
   tools/
     mileage/
       model.js             pure: totals, remaining, spread, rounding
