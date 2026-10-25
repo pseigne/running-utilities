@@ -16,7 +16,6 @@
 /* the week: white bars that grow from the lane, the line sliding to the average */
 .trackcard .bar{fill:#fff;transform-box:fill-box;transform-origin:50% 100%;transition:transform var(--run) var(--ease)}
 .trackcard .bar.spread{fill:none;stroke:#fff;stroke-width:2;vector-effect:non-scaling-stroke}
-.trackcard .move{transition:transform var(--run) var(--ease)}
 
 @media (max-width: 720px){
   .controls{gap:12px}

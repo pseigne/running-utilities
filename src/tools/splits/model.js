@@ -105,9 +105,10 @@ export function formatSplit(seconds) {
   return hundredths < 10000 ? (hundredths / 100).toFixed(2) : formatClock(seconds)
 }
 
-// Metres to show: whole metres, with a thousands comma like the race names.
+// Metres to show: whole metres, with a thousands comma like the race names, and a space that never
+// breaks between the number and its unit.
 export function formatMeters(meters) {
-  return `${Math.round(meters).toLocaleString('en-US')} m`
+  return `${Math.round(meters).toLocaleString('en-US')}\u00a0m`
 }
 
 // The race in words: "mile", or its metres.

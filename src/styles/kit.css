@@ -38,6 +38,8 @@ a.detail-card:hover,button.detail-card:hover{background:var(--sel);border-color:
 .trackcard svg text.k{fill:#fff;font-weight:600}
 .trackcard .lane{stroke:#fff;stroke-width:1.5;shape-rendering:crispEdges}
 .trackcard .the-line{stroke:#151515;stroke-width:3}
+/* marks that move to new values slide there */
+.trackcard .move{transition:transform var(--run) var(--ease)}
 /* caption text on the track is white: anything dimmer drops under 4.5:1 on the orange */
 .trackcard figcaption{font-size:14px;color:#fff;margin:8px 8px 0;max-width:80ch;text-wrap:pretty}
 
@@ -86,6 +88,13 @@ table.dt{width:100%;border-collapse:collapse}
 .more:disabled{color:var(--ink-2);text-decoration:none;cursor:default;transform:none}
 /* labels drawn over the track keep a ring of track around them, so lines passing behind stay clear */
 .trackcard svg text.halo{paint-order:stroke;stroke:var(--track);stroke-width:5px;stroke-linejoin:round}
+
+/* on tablets the lead goes under the number, as in the NCAA tracker, so a wide number keeps its words
+   readable */
+@media (min-width: 721px) and (max-width: 1099px){
+  .hero{display:block}
+  .lead{max-width:44ch;margin-top:14px;padding:0}
+}
 
 @media (prefers-reduced-motion: reduce){
   .detail-card,.detail-go svg,.field-box{transition:none}

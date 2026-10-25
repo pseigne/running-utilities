@@ -13,24 +13,27 @@ export function PillLinks({ label, items, current, className = '' }) {
   )
 }
 
-// A pill group of radios: one choice in a form, with the keyboard behaviour radios already have.
+// A pill group of radios: one choice in a form, with the keyboard behaviour radios already have. The
+// fieldset groups and names them; the trough inside it is styled like PillLinks'.
 export function PillChoice({ legend, name, options, value, onChange, className = '' }) {
   return (
-    <fieldset className={`pills${className ? ` ${className}` : ''}`}>
+    <fieldset className="pillset">
       <legend className="vh">{legend}</legend>
-      {options.map(option => (
-        <label key={option.value} className="press">
-          <input
-            className="vh"
-            type="radio"
-            name={name}
-            value={option.value}
-            checked={option.value === value}
-            onChange={() => onChange(option.value)}
-          />
-          {option.label}
-        </label>
-      ))}
+      <div className={`pills${className ? ` ${className}` : ''}`}>
+        {options.map(option => (
+          <label key={option.value} className="press">
+            <input
+              className="vh"
+              type="radio"
+              name={name}
+              value={option.value}
+              checked={option.value === value}
+              onChange={() => onChange(option.value)}
+            />
+            {option.label}
+          </label>
+        ))}
+      </div>
     </fieldset>
   )
 }

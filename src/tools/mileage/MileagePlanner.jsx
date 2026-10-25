@@ -120,7 +120,7 @@ function Lead({ week }) {
     case 'met':
       return <>{goal} of {goal} miles planned. <b>The week is on target.</b></>
     default:
-      return <>{miles(week.planned)} planned, <b>{formatMiles(-week.remaining)} over</b> your {goal}-mile goal.</>
+      return <>{miles(week.planned)} planned, <b>{formatMiles(-week.remaining)} over</b> your {goal}‑mile goal.</>
   }
 }
 

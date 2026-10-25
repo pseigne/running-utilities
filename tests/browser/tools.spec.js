@@ -46,16 +46,20 @@ test('the nav is pinned, measured, and sits on the track’s curb', async ({ pag
 })
 
 test('every target is at least 44px tall', async ({ page }) => {
-  await page.goto('')
-  const small = await page.evaluate(() => [...document.querySelectorAll('header a, .pills a, .pills label')]
-    .filter(el => {
-      // a pill's ::after reaches 4px above and below it
-      const height = el.getBoundingClientRect().height
-      const reach = getComputedStyle(el, '::after').content === 'none' ? height : height + 8
-      return reach < 44
-    })
-    .map(el => el.textContent))
-  expect(small).toEqual([])
+  for (const tool of ['weekly-mileage', 'track-splits']) {
+    await page.goto(`#${tool}`)
+    // a field's target is its box; only what's on show counts, as the other tool's targets are hidden
+    const small = await page.evaluate(() => [...document.querySelectorAll('a, button, .pills label, .field-box')]
+      .filter(el => el.checkVisibility())
+      .filter(el => {
+        // a pill's ::after reaches 4px above and below it
+        const height = el.getBoundingClientRect().height
+        const reach = getComputedStyle(el, '::after').content === 'none' ? height : height + 8
+        return reach < 44
+      })
+      .map(el => el.textContent || el.getAttribute('aria-label') || el.id))
+    expect(small, tool).toEqual([])
+  }
 })
 
 test('phone, tablet, and desktop render without errors or sideways scrolling', async ({ page }) => {
@@ -124,6 +128,53 @@ for (const colorScheme of ['light', 'dark']) {
       // a full-page shot taken scrolled down draws the pinned nav mid-page
       await page.evaluate(() => { document.activeElement.blur(); scrollTo(0, 0) })
       await page.screenshot({ path: `test-results/mileage-${colorScheme}-${width}.png`, fullPage: true })
+    }
+  })
+}
+
+test('splits: an 800 in 2:00 is two laps, picked from the keyboard', async ({ page }) => {
+  await page.goto('#track-splits')
+  const tool = shownTool(page)
+  await tool.getByRole('textbox', { name: 'Minutes' }).fill('2')
+  // radios: Tab reaches the checked one, arrows move the choice
+  await tool.getByRole('radio', { name: 'Mile' }).focus()
+  await page.keyboard.press('ArrowLeft')
+  await page.keyboard.press('ArrowLeft')
+  await expect(tool.getByRole('radio', { name: '800 m' })).toBeChecked()
+  await expect(tool.locator('.pills label:has(input:focus-visible)')).toHaveCount(1)
+  await expect(tool.locator('tbody tr[data-row]')).toHaveCount(2)
+  await expect(tool.locator('tbody tr[data-row]').last().locator('td').last()).toHaveText('2:00.00')
+})
+
+test('splits: the time fits on a phone and the strip draws at its real width', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 900 })
+  await page.goto('#track-splits')
+  const tool = shownTool(page)
+  await tool.getByRole('textbox', { name: 'Hours' }).fill('1')
+  await tool.getByRole('textbox', { name: 'Minutes' }).fill('02')
+  await tool.getByRole('textbox', { name: 'Seconds' }).fill('03.45')
+  await tool.getByRole('radio', { name: '10,000 m' }).check({ force: true })
+  const card = await tool.locator('.herocard').boundingBox()
+  const group = await tool.getByRole('group', { name: 'Goal time' }).boundingBox()
+  expect(group.x + group.width).toBeLessThanOrEqual(card.x + card.width)
+  const svg = tool.locator('.trackcard svg')
+  await expect.poll(async () => Math.abs(Number(await svg.getAttribute('width')) - (await svg.boundingBox()).width)).toBeLessThan(1)
+  await expect(svg.locator('text', { hasText: '1:02:03.45' })).toBeVisible()
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+})
+
+for (const colorScheme of ['light', 'dark']) {
+  test(`splits looks right filled in, ${colorScheme}`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' })
+    for (const width of [375, 768, 1440]) {
+      await page.setViewportSize({ width, height: 900 })
+      await page.goto('#track-splits')
+      await page.reload()
+      const tool = shownTool(page)
+      await tool.getByRole('textbox', { name: 'Minutes' }).fill('4')
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+      await page.evaluate(() => { document.activeElement.blur(); scrollTo(0, 0) })
+      await page.screenshot({ path: `test-results/splits-${colorScheme}-${width}.png`, fullPage: true })
     }
   })
 }

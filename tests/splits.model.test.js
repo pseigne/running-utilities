@@ -125,10 +125,10 @@ describe('formatting', () => {
   })
 
   it('writes metres and race names', () => {
-    expect(formatMeters(10000)).toBe('10,000 m')
-    expect(formatMeters(9.344)).toBe('9 m')
+    expect(formatMeters(10000)).toBe('10,000\u00a0m')
+    expect(formatMeters(9.344)).toBe('9\u00a0m')
     expect(raceName('mile', MILE)).toBe('mile')
-    expect(raceName('1500', 1500)).toBe('1,500 m')
-    expect(raceName('other', 1200)).toBe('1,200 m')
+    expect(raceName('1500', 1500)).toBe('1,500\u00a0m')
+    expect(raceName('other', 1200)).toBe('1,200\u00a0m')
   })
 })

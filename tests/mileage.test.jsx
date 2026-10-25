@@ -61,7 +61,7 @@ describe('the mileage planner', () => {
     const monday = screen.getByRole('textbox', { name: 'Monday' }).closest('tr')
     expect(within(monday).queryByText('spread')).toBeNull()
     expect(document.querySelectorAll('.tag')).toHaveLength(6)
-    expect(lead()).toBe('16 miles planned, 2 over your 14-mile goal.')
+    expect(lead()).toBe('16 miles planned, 2 over your 14\u2011mile goal.')
     expect(number()).toBe('2mi over')
   })
 
