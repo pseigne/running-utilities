@@ -1,0 +1,28 @@
+/* the goal and the actions sit under the answer, across a rule */
+.controls{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 16px;margin-top:22px;padding-top:18px;border-top:1px solid var(--rule)}
+.controls .field{width:170px}
+.controls .note{flex-basis:100%;font-size:14px;color:var(--ink-2)}
+
+/* from 1100px the week and the days sit side by side */
+.mileage-grid{display:grid;gap:0 16px}
+@media (min-width: 1100px){ .mileage-grid{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:start} }
+
+.days td{height:56px}
+.days .field{width:120px}
+.days .field-hint{max-width:120px;text-align:right}
+.days .field.spread input{color:var(--ink-2);font-weight:400}
+.tag{margin-left:8px;font-size:13px;font-weight:400;font-stretch:100%;color:var(--ink-2)}
+
+/* the week: white bars that grow from the lane, the line sliding to the average */
+.trackcard .bar{fill:#fff;transform-box:fill-box;transform-origin:50% 100%;transition:transform var(--run) var(--ease)}
+.trackcard .bar.spread{fill:none;stroke:#fff;stroke-width:2;vector-effect:non-scaling-stroke}
+.trackcard .move{transition:transform var(--run) var(--ease)}
+
+@media (max-width: 720px){
+  .controls{gap:12px}
+  .controls .field{width:100%}
+  .controls .btn{flex:1}
+  .days td{height:auto}
+  .days tbody tr[data-row]{align-items:center}
+  .days .field{width:110px}
+}

@@ -11,7 +11,7 @@ function goTo(hash) {
 }
 
 function shown() {
-  return [...document.querySelectorAll('main section')].filter(section => !section.hidden).map(section => section.dataset.tool)
+  return [...document.querySelectorAll('main > section[data-tool]')].filter(section => !section.hidden).map(section => section.dataset.tool)
 }
 
 afterEach(() => {
@@ -53,9 +53,9 @@ describe('the page', () => {
 
   it('keeps both tools mounted so their inputs survive switching', () => {
     render(<App />)
-    expect(document.querySelectorAll('main section')).toHaveLength(TOOLS.length)
+    expect(document.querySelectorAll('main > section[data-tool]')).toHaveLength(TOOLS.length)
     goTo('#track-splits')
-    expect(document.querySelectorAll('main section')).toHaveLength(TOOLS.length)
+    expect(document.querySelectorAll('main > section[data-tool]')).toHaveLength(TOOLS.length)
   })
 
   it('links the switch to each tool’s hash', () => {

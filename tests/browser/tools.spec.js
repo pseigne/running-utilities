@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 
-const shownTool = page => page.locator('main section:not([hidden])')
+const shownTool = page => page.locator('main > section[data-tool]:not([hidden])')
 
 test('the switch, direct links, and browser history pick the tool', async ({ page }) => {
   await page.goto('')
@@ -73,6 +73,61 @@ test('phone, tablet, and desktop render without errors or sideways scrolling', a
   expect(errors).toEqual([])
 })
 
+test('mileage: 50 with 20 on Monday spreads 5 a day, and survives a trip to the other tool', async ({ page }) => {
+  await page.goto('#weekly-mileage')
+  const tool = shownTool(page)
+  await tool.getByRole('textbox', { name: 'Weekly goal' }).fill('50')
+  await tool.getByRole('textbox', { name: 'Monday', exact: true }).fill('20')
+  await expect(tool.locator('.num')).toHaveText('30mi to go')
+  await tool.getByRole('button', { name: 'Spread the rest over open days' }).click()
+  await expect(tool.getByRole('textbox', { name: 'Tuesday' })).toHaveValue('5')
+  await expect(tool.locator('.lead')).toHaveText('50 of 50 miles planned. The week is on target.')
+  await page.getByRole('link', { name: 'Track splits' }).click()
+  await page.getByRole('link', { name: 'Weekly mileage' }).click()
+  await expect(tool.getByRole('textbox', { name: 'Monday', exact: true })).toHaveValue('20')
+  await expect(tool.getByRole('textbox', { name: 'Sunday' })).toHaveValue('5')
+})
+
+test('mileage: the week draws at its real width, with the line at the daily average', async ({ page }) => {
+  for (const width of [375, 1440]) {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('#weekly-mileage')
+    const tool = shownTool(page)
+    await tool.getByRole('textbox', { name: 'Weekly goal' }).fill('35')
+    await tool.getByRole('textbox', { name: 'Monday', exact: true }).fill('10')
+    const svg = tool.locator('.trackcard svg')
+    // it measures itself after a resize, a frame later
+    await expect.poll(async () => Math.abs(Number(await svg.getAttribute('width')) - (await svg.boundingBox()).width)).toBeLessThan(1)
+    // labels stay 14px however wide the card is
+    expect(await svg.locator('text').first().evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThan(12)
+    await expect(svg.locator('text', { hasText: '5 a day makes 35' })).toBeVisible()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  }
+})
+
+for (const colorScheme of ['light', 'dark']) {
+  test(`mileage looks right filled in, ${colorScheme}`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme, reducedMotion: 'reduce' })
+    for (const width of [375, 768, 1440]) {
+      await page.setViewportSize({ width, height: 900 })
+      await page.goto('#weekly-mileage')
+      // the same hash doesn't reload, so start each width from an empty week
+      await page.reload()
+      const tool = shownTool(page)
+      await tool.getByRole('textbox', { name: 'Weekly goal' }).fill('50')
+      await tool.getByRole('textbox', { name: 'Monday', exact: true }).fill('6')
+      await tool.getByRole('textbox', { name: 'Tuesday' }).fill('8')
+      await tool.getByRole('textbox', { name: 'Thursday' }).fill('10')
+      await tool.getByRole('button', { name: 'Spread the rest over open days' }).click()
+      await tool.getByRole('textbox', { name: 'Saturday' }).fill('12')
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+      // a full-page shot taken scrolled down draws the pinned nav mid-page
+      await page.evaluate(() => { document.activeElement.blur(); scrollTo(0, 0) })
+      await page.screenshot({ path: `test-results/mileage-${colorScheme}-${width}.png`, fullPage: true })
+    }
+  })
+}
+
 test('the kit gallery lays out at every width', async ({ page }) => {
   const errors = []
   page.on('pageerror', error => errors.push(error.message))
@@ -102,7 +157,7 @@ test('kit tables turn into grids on phones and keep their heads on wider screens
 
 test('kit fields are 44px to tap and mark a wrong value in the line’s red', async ({ page }) => {
   await page.goto('#kit')
-  for (const box of await page.locator('.field-box').all()) {
+  for (const box of await page.locator('[data-tool="kit"] .field-box').all()) {
     expect((await box.boundingBox()).height).toBeGreaterThanOrEqual(44)
   }
   const wrong = page.getByRole('textbox', { name: 'Wed' })

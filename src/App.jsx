@@ -59,7 +59,7 @@ export default function App() {
 // The skip link's own href would change the hash, which picks the tool, so it moves focus itself: to the
 // heading of the tool on show.
 function skipToTool(click) {
-  const heading = document.querySelector('main section:not([hidden]) h1')
+  const heading = document.querySelector('main > section[data-tool]:not([hidden]) h1')
   if (!heading) return
   click.preventDefault()
   heading.tabIndex = -1
