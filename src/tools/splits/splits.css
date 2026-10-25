@@ -1,0 +1,31 @@
+/* the goal time: three big fields that read as one mark, joined by colons */
+.timefield{display:flex;align-items:flex-end;gap:2px;min-width:0}
+.timefield .field.big input{font-size:96px;padding:6px 12px 10px}
+.timefield .field-l{padding-left:2px}
+.colon{font-size:72px;line-height:1;font-weight:600;color:var(--ink-2);padding-bottom:14px}
+
+/* the race and the track: a label, its pills, and the Other field beside them */
+.choices{display:flex;flex-wrap:wrap;gap:12px 32px;margin:8px 0 24px}
+.choice{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;min-width:0}
+.choice-l{font-size:14px;color:var(--ink-2);min-width:44px}
+.choice .field{flex-direction:row;align-items:center;gap:10px}
+.choice .field .field-box{width:130px}
+.choice .field-hint{flex-basis:100%}
+/* seven distances wrap onto a second row on narrow screens */
+.pills.wrapping{flex-wrap:wrap;border-radius:22px}
+
+.splits-grid{display:grid;gap:0 16px}
+@media (min-width: 1100px){ .splits-grid{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:start} }
+
+@media (max-width: 720px){
+  .timefield .field.big input{font-size:44px;padding:4px 8px 6px}
+  .timefield .field-l{font-size:13px}
+  .colon{font-size:36px;padding-bottom:8px}
+  .choices{gap:12px;margin-bottom:16px}
+  .choice{width:100%}
+  .choice-l{flex-basis:100%}
+  /* on phones the distances fill a grid the width of the screen, four to a row */
+  .choice .pillset{flex-basis:100%}
+  .pills.wrapping{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+  .pills.wrapping label{padding:0 6px}
+}

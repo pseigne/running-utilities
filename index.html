@@ -2,23 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="The original Weekly Mileage Planner and Track Split Calculator, together in two tabs." />
+    <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="A weekly mileage planner and a track split calculator for runners." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..700&display=swap" rel="stylesheet" />
     <title>Running Utilities</title>
   </head>
   <body>
-    <div class="tool-tabs" role="tablist" aria-label="Running tools">
-      <button id="mileage-tab" type="button" role="tab" aria-controls="weekly-mileage" aria-selected="true" data-tool="weekly-mileage">Weekly Mileage Planner</button>
-      <button id="splits-tab" type="button" role="tab" aria-controls="track-splits" aria-selected="false" tabindex="-1" data-tool="track-splits">Track Split Calculator</button>
-    </div>
-    <main>
-      <section id="weekly-mileage" role="tabpanel" aria-labelledby="mileage-tab">
-        <iframe src="%BASE_URL%weekly-mileage/index.html" title="Weekly Mileage Planner"></iframe>
-      </section>
-      <section id="track-splits" role="tabpanel" aria-labelledby="splits-tab" hidden>
-        <iframe src="%BASE_URL%track-splits/index.html" title="Track Split Calculator"></iframe>
-      </section>
-    </main>
-    <script type="module" src="/src/main.js"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

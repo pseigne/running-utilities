@@ -1,0 +1,17 @@
+/* The heat sheet's tokens, as in the NCAA qualification tracker (see design.md). Surfaces restyle their
+   contents by reassigning these, never by hard-coding colors inside a component. */
+:root{
+  color-scheme: light dark;
+  --bg:#ffffff; --ink:#151515; --ink-2:#5c5c58; --rule:#ebebe8; --lane:#d9d9d5; --sel:#f2f2ef; --ring:#8c8c88; --line:#c4361b;
+  --cond: 72%; --ease: cubic-bezier(.2,.8,.2,1); --fast:120ms; --run:700ms;
+  /* the page is a warm grey ground; data sits on white cards, the answer on black, the picture on the track */
+  --page:#EDEBE6; --page-rule:#dcd9d2; --page-sel:#e4e1da; --card:#ffffff; --card-rule:#ebebe8; --card-sel:#f2f2ef;
+  --nav:#151515; --hero:#151515; --paper:#F4F2EE; --track:#C4532F; --track-ink:#5a1c0c; --accent:#FF7A57;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#121212; --ink:#efefec; --ink-2:#a5a5a0; --rule:#262625; --lane:#383836; --sel:#1d1d1c; --ring:#8a8a87; --line:#ff6a4a;
+    --page:#121212; --page-rule:#262625; --page-sel:#1d1d1c; --card:#1c1c1b; --card-rule:#2c2c2a; --card-sel:#252524; --hero:#202020; }
+}
+@media (prefers-reduced-motion: reduce){
+  :root{--fast:0ms;--run:0ms}
+}
