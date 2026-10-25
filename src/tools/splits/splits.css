@@ -1,31 +1,38 @@
 /* the goal time: three big fields that read as one mark, joined by colons */
 .timefield{display:flex;align-items:flex-end;gap:2px;min-width:0}
-.timefield .field.big input{font-size:96px;padding:6px 12px 10px}
+.timefield .field.big input{font-size:88px;padding:6px 10px 10px}
 .timefield .field-l{padding-left:2px}
-.colon{font-size:72px;line-height:1;font-weight:600;color:var(--ink-2);padding-bottom:14px}
+.colon{font-size:64px;line-height:1;font-weight:600;color:var(--ink-2);padding-bottom:14px}
 
-/* the race and the track: a label, its pills, and the Other field beside them */
-.choices{display:flex;flex-wrap:wrap;gap:12px 32px;margin:8px 0 24px}
+/* the race and the track, in the hero under the lead: a label, its pills, and the Other field */
+.choices{display:grid;gap:10px;width:100%}
 .choice{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;min-width:0}
 .choice-l{font-size:14px;color:var(--ink-2);min-width:44px}
 .choice .field{flex-direction:row;align-items:center;gap:10px}
-.choice .field .field-box{width:130px}
+.choice .field .field-box{width:120px}
 .choice .field-hint{flex-basis:100%}
-/* seven distances wrap onto a second row on narrow screens */
+/* seven distances wrap onto a second row when there isn't room for them in one */
 .pills.wrapping{flex-wrap:wrap;border-radius:22px}
 
 .splits-grid{display:grid;gap:0 16px}
-@media (min-width: 1100px){ .splits-grid{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:start} }
+/* wide: the table, and the race standing up beside it, pinned under the nav while the table scrolls.
+   The rail is as tall as the table (at least 360px) and never taller than the screen. */
+.splits-grid.wide{grid-template-columns:minmax(0,1.3fr) minmax(300px,1fr);align-items:stretch}
+.splits-grid.wide > .card{align-self:start}
+.rail{min-height:360px;margin-bottom:16px}
+.rail .trackcard{position:sticky;top:calc(var(--head, 66px) + 16px);height:min(100%, calc(100vh - var(--head, 66px) - 32px));min-height:360px;margin:0;display:flex;flex-direction:column}
+.rail .trackcard .plot{flex:1;min-height:0}
+.strip.standing{position:relative;height:100%}
+.strip.standing svg{position:absolute;inset:0}
 
 @media (max-width: 720px){
   .timefield .field.big input{font-size:44px;padding:4px 8px 6px}
   .timefield .field-l{font-size:13px}
   .colon{font-size:36px;padding-bottom:8px}
-  .choices{gap:12px;margin-bottom:16px}
-  .choice{width:100%}
   .choice-l{flex-basis:100%}
   /* on phones the distances fill a grid the width of the screen, four to a row */
   .choice .pillset{flex-basis:100%}
   .pills.wrapping{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
   .pills.wrapping label{padding:0 6px}
+  .stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px}
 }

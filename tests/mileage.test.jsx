@@ -1,13 +1,18 @@
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import MileagePlanner from '../src/tools/mileage/MileagePlanner'
 
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  vi.unstubAllGlobals()
+})
 
 const type = (name, value) => fireEvent.change(screen.getByRole('textbox', { name }), { target: { value } })
 const number = () => document.querySelector('.num').textContent
 const lead = () => document.querySelector('.lead').textContent
 const line = () => document.querySelector('.finish').textContent
+// the board's note under each day: its spread mark or the week so far
+const notes = () => [...document.querySelectorAll('.board-note')].map(note => note.textContent)
 const spreadButton = () => screen.getByRole('button', { name: 'Spread the rest over open days' })
 
 describe('the mileage planner', () => {
@@ -19,8 +24,9 @@ describe('the mileage planner', () => {
     expect(spreadButton().disabled).toBe(true)
     expect(screen.getByText('Set a goal to spread what’s left over the open days.')).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Clear the week' }).disabled).toBe(true)
-    expect(line()).toBe('No goal yet')
     expect(screen.getAllByRole('textbox')).toHaveLength(8)
+    expect(document.querySelectorAll('.board-day')).toHaveLength(7)
+    expect(screen.queryByRole('table')).toBeNull()
   })
 
   it('keeps the old example: a 50 goal and 20 on Monday leave 30, 5 a day', () => {
@@ -29,28 +35,22 @@ describe('the mileage planner', () => {
     type('Monday', '20')
     expect(number()).toBe('30mi to go')
     expect(lead()).toBe('20 of 50 miles planned. 30 to go across 6 open days, about 5 a day.')
-    expect(line()).toBe('Goal · 30 mi to go50 mi')
     fireEvent.click(spreadButton())
     expect(screen.getByRole('textbox', { name: 'Tuesday' }).value).toBe('5')
     expect(screen.getByRole('textbox', { name: 'Sunday' }).value).toBe('5')
-    expect(document.querySelectorAll('.tag')).toHaveLength(6)
+    expect(notes()).toEqual(['20 so far', 'spread', 'spread', 'spread', 'spread', 'spread', 'spread'])
     expect(screen.getByRole('status').textContent).toBe('Spread 30 miles over 6 days.')
     expect(number()).toBe('0mi to go')
     expect(lead()).toBe('50 of 50 miles planned. The week is on target.')
-    expect(line()).toBe('Goal reached50 mi')
     expect(spreadButton().disabled).toBe(true)
-    expect(screen.getByText('Nothing left to spread.')).toBeTruthy()
+    expect(document.querySelector('.note')).toBeNull()
   })
 
-  it('keeps a running total down the table, with a dash until there is one', () => {
+  it('notes the week so far under each day that has miles', () => {
     render(<MileagePlanner />)
-    type('Tuesday', '6')
-    expect(document.querySelector('tbody tr[data-row]').cells[2].textContent).toBe('–')
-    type('Tuesday', '')
     type('Monday', '6')
     type('Wednesday', '4.5')
-    const totals = [...document.querySelectorAll('tbody tr[data-row]')].map(row => row.cells[2].textContent)
-    expect(totals).toEqual(['6', '6', '10.5', '10.5', '10.5', '10.5', '10.5'])
+    expect(notes()).toEqual(['6 so far', '', '10.5 so far', '', '', '', ''])
     expect(number()).toBe('10.5mi planned')
     expect(lead()).toBe('10.5 miles planned so far. Set a weekly goal to see what’s left.')
   })
@@ -61,9 +61,9 @@ describe('the mileage planner', () => {
     fireEvent.click(spreadButton())
     expect(screen.getByRole('textbox', { name: 'Monday' }).value).toBe('2')
     type('Monday', '4')
-    const monday = screen.getByRole('textbox', { name: 'Monday' }).closest('tr')
+    const monday = screen.getByRole('textbox', { name: 'Monday' }).closest('.board-day')
     expect(within(monday).queryByText('spread')).toBeNull()
-    expect(document.querySelectorAll('.tag')).toHaveLength(6)
+    expect(notes().filter(note => note === 'spread')).toHaveLength(6)
     expect(lead()).toBe('16 miles planned, 2 over your 14\u2011mile goal.')
     expect(number()).toBe('2mi over')
   })
@@ -83,7 +83,7 @@ describe('the mileage planner', () => {
     expect(screen.getByText('Enter the goal as a number of miles.')).toBeTruthy()
     type('Tuesday', 'x')
     expect(screen.getByRole('textbox', { name: 'Tuesday' }).getAttribute('aria-invalid')).toBe('true')
-    expect(screen.getByText('Enter miles as a number, like 6 or 6.5.')).toBeTruthy()
+    expect(screen.getByText('Enter a number of miles.')).toBeTruthy()
     expect(document.body.textContent).not.toContain('NaN')
   })
 
@@ -105,5 +105,32 @@ describe('the mileage planner', () => {
     expect(document.querySelector('.trackcard .the-line')).toBeTruthy()
     expect(document.querySelector('.trackcard').textContent).toContain('5 a day makes 35')
     expect(document.querySelector('figcaption').textContent).toContain('The black line is 5 miles, the daily average that makes 35.')
+  })
+})
+
+describe('the mileage planner on a phone', () => {
+  // phones list the days in a table with the goal's line under it, instead of the board
+  const phone = () => vi.stubGlobal('matchMedia', query => ({
+    matches: query.includes('max-width: 720px'), addEventListener() {}, removeEventListener() {},
+  }))
+
+  it('lists the days with a running total and the goal’s line', () => {
+    phone()
+    render(<MileagePlanner />)
+    expect(document.querySelector('.board')).toBeNull()
+    expect(line()).toBe('No goal yet')
+    type('Tuesday', '6')
+    expect(document.querySelector('tbody tr[data-row]').cells[2].textContent).toBe('–')
+    expect(document.querySelectorAll('tbody tr[data-row]')[1].cells[2].textContent).toBe('6 so far')
+    type('Tuesday', '')
+    type('Weekly goal', '50')
+    type('Monday', '20')
+    expect(line()).toBe('Goal · 30 mi to go50 mi')
+    type('Wednesday', '4.5')
+    const totals = [...document.querySelectorAll('tbody tr[data-row]')].map(row => row.cells[2].textContent)
+    expect(totals).toEqual(['20 so far', '20 so far', '24.5 so far', '24.5 so far', '24.5 so far', '24.5 so far', '24.5 so far'])
+    fireEvent.click(spreadButton())
+    expect(document.querySelectorAll('.tag')).toHaveLength(5)
+    expect(line()).toBe('Goal reached50 mi')
   })
 })

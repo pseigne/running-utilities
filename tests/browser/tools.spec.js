@@ -281,5 +281,9 @@ test('the page wears design.md’s heat sheet', async ({ page }) => {
   expect(await style('[data-tool="track-splits"] .trackcard .the-line', 'strokeWidth')).toBe('3px')
   expect(await style('[data-tool="track-splits"] .finish', 'borderTopColor')).toBe('rgb(196, 54, 27)')
   expect(await style('[data-tool="track-splits"] h1', 'fontStretch')).toBe('72%')
-  expect(await style('[data-tool="track-splits"] .pills label:has(input:checked)', 'backgroundColor')).toBe('rgb(21, 21, 21)')
+  // on black (the hero and the nav), the current pill is paper with black words
+  expect(await style('[data-tool="track-splits"] .pills label:has(input:checked)', 'backgroundColor')).toBe('rgb(244, 242, 238)')
+  expect(await style('[data-tool="track-splits"] .pills label:has(input:checked)', 'color')).toBe('rgb(21, 21, 21)')
+  expect(await style('header .pills [aria-current]', 'backgroundColor')).toBe('rgb(244, 242, 238)')
+  expect(await style('header .pills [aria-current]', 'color')).toBe('rgb(21, 21, 21)')
 })

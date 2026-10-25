@@ -9,6 +9,7 @@ const choose = (name, group = 'Race distance') => fireEvent.click(within(screen.
 // metres keep their unit on the same line with a non-breaking space; compare with plain ones
 const plain = text => text.replace(/\u00a0/g, ' ')
 const lead = () => plain(document.querySelector('.lead').textContent)
+const stats = () => [...document.querySelectorAll('.stats > div')].map(item => [item.querySelector('dt').textContent, item.querySelector('dd').textContent])
 const rows = () => [...document.querySelectorAll('tbody tr[data-row]')].map(row => [...row.cells].map(cell => plain(cell.textContent)))
 
 describe('the split calculator', () => {
@@ -39,18 +40,16 @@ describe('the split calculator', () => {
     expect(rows()[0]).toEqual(['Start', '9 m', '1.399 m', '0:01.39'])
     expect(rows().at(-1)).toEqual(['4', '1,609 m', '59.65', '4:00.00'])
     expect(screen.getByRole('table', { name: 'Splits for a 4:00.00 mile on a 400\u00a0m track' })).toBeTruthy()
-    expect(plain(document.querySelector('.details').textContent)).toContain('2:29.13 for each kilometre.')
-    expect(plain(document.querySelector('.details').textContent)).toContain('4:00.00 for each mile.')
-    expect(plain(document.querySelector('.details').textContent)).not.toContain('400 m')
+    expect(stats()).toEqual([['Per lap', '59.65'], ['Per km', '2:29.13'], ['Per mile', '4:00.00']])
     expect(plain(document.querySelector('figcaption').textContent)).toContain('The start is 9 m round from the line')
   })
 
-  it('switches tracks and adds the per-400 card off a 400', () => {
+  it('switches tracks and adds the per-400 figure off a 400', () => {
     render(<SplitCalculator />)
     type('Minutes', '4')
     choose('200 m', 'Track length')
     expect(lead()).toBe('A 4:00.00 mile is 29.83 a lap on a 200 m track.')
-    expect(plain(document.querySelector('.details').textContent)).toContain('59.65 for each 400 m.')
+    expect(stats()[1]).toEqual(['Per 400 m', '59.65'])
   })
 
   it('takes Other distances and tracks, asking for metres until they are valid', () => {

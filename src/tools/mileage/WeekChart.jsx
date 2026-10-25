@@ -1,22 +1,21 @@
 import { useRef } from 'react'
-import { useElementWidth } from '../../kit/useElementWidth'
-import { usePhone } from '../../kit/useMedia'
+import { useElementSize } from '../../kit/useElementWidth'
 import { DAYS, formatMiles } from './model'
 
 const TOP = 40
-const BOTTOM = 50
+const LABELS = 50
 
 // The week on the track: a bar for each day, filled for runs that were entered and outlined for miles
 // spread over open days, and the line at the daily average that makes the goal. Bars grow and the line
-// slides as the numbers change. Words stay out of the plot, where bars and the line would cross them:
-// each day's miles sit under its name, and the line's label sits above with a key. The day table
-// carries the same numbers for screen readers.
-export function WeekChart({ week, spreadDays }) {
+// slides as the numbers change. It fills the height it's given. Words stay out of the plot, where bars
+// and the line would cross them: the line's label sits above with a key, and each day's name and miles
+// sit under it, unless the week board's fields are there instead (labels false). The fields or the day
+// table carry the same numbers for screen readers.
+export function WeekChart({ week, spreadDays, labels = true }) {
   const ref = useRef(null)
-  const width = useElementWidth(ref)
-  const phone = usePhone()
-  const height = phone ? 200 : 260
-  const plot = height - TOP - BOTTOM
+  const { width, height } = useElementSize(ref)
+  const bottom = labels ? LABELS : 2
+  const plot = Math.max(height - TOP - bottom, 40)
   const values = week.days.map(day => (day.open || day.invalid ? 0 : day.miles))
   const max = Math.max(...values, week.average ?? 0, 1) * 1.08
   const column = width / DAYS.length
@@ -26,7 +25,7 @@ export function WeekChart({ week, spreadDays }) {
   const key = week.average === null ? null : `${formatMiles(week.average)} a day makes ${formatMiles(week.goal)}`
 
   return (
-    <div ref={ref}>
+    <div className={`week-chart${labels ? ' labelled' : ''}`} ref={ref}>
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} aria-hidden="true">
         <line className="lane" x1="0" x2={width} y1={base} y2={base} />
         {DAYS.map((day, index) => {
@@ -34,7 +33,7 @@ export function WeekChart({ week, spreadDays }) {
           const miles = values[index]
           const spread = spreadDays.has(index)
           return (
-            <g key={day.key} className={`day${week.days[index].open ? ' open' : ''}`}>
+            <g key={day.key}>
               <rect
                 className={`bar${spread ? ' spread' : ''}`}
                 x={x - bar / 2}
@@ -43,8 +42,12 @@ export function WeekChart({ week, spreadDays }) {
                 height={plot}
                 style={{ transform: `scaleY(${miles / max})` }}
               />
-              <text x={x} y={height - 28} textAnchor="middle">{day.short}</text>
-              <text className="k" x={x} y={height - 8} textAnchor="middle">{miles > 0 ? formatMiles(miles) : '–'}</text>
+              {labels && (
+                <>
+                  <text x={x} y={height - 28} textAnchor="middle">{day.short}</text>
+                  <text className="k" x={x} y={height - 8} textAnchor="middle">{miles > 0 ? formatMiles(miles) : '–'}</text>
+                </>
+              )}
             </g>
           )
         })}

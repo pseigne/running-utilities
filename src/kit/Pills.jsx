@@ -1,11 +1,18 @@
-// A pill group of links, one of them the current page: switching views that each have their own URL.
+// A pill group of links, one of them the current page: switching views that each have their own URL. An
+// item's short label, when it has one, shows on phones; the link keeps its full name either way.
 export function PillLinks({ label, items, current, className = '' }) {
   return (
     <nav className={className || undefined} aria-label={label}>
       <span className="pills">
         {items.map(item => (
-          <a key={item.key} className="press" href={item.href} aria-current={item.key === current ? 'page' : undefined}>
-            {item.label}
+          <a
+            key={item.key}
+            className="press"
+            href={item.href}
+            aria-current={item.key === current ? 'page' : undefined}
+            aria-label={item.short ? item.label : undefined}
+          >
+            {item.short ? <><span className="pl-full">{item.label}</span><span className="pl-short">{item.short}</span></> : item.label}
           </a>
         ))}
       </span>

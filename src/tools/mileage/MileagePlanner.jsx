@@ -6,11 +6,12 @@ import { DataTable } from '../../kit/DataTable'
 import { HeroCard } from '../../kit/HeroCard'
 import { NumberField } from '../../kit/NumberField'
 import { TrackCard } from '../../kit/TrackCard'
+import { usePhone } from '../../kit/useMedia'
 import { DAYS, EMPTY_WEEK, formatMiles, spread, summarize } from './model'
 import { WeekChart } from './WeekChart'
 import './mileage.css'
 
-const MILES_HINT = 'Enter miles as a number, like 6 or 6.5.'
+const MILES_HINT = 'Enter a number of miles.'
 
 // How many miles are left this week, and where they go.
 export default function MileagePlanner() {
@@ -20,6 +21,8 @@ export default function MileagePlanner() {
   const [spreadDays, setSpreadDays] = useState(() => new Set())
   const [said, setSaid] = useState('')
   const week = summarize(goal, days)
+  // Phones list the days in a table; wider screens put each day's field under its bar.
+  const phone = usePhone()
 
   const setDay = (index, text) => {
     setDays(old => old.with(index, text))
@@ -50,28 +53,34 @@ export default function MileagePlanner() {
     },
     {
       key: 'miles', label: 'Miles', align: 'r', phone: 'end',
-      render: row => (
-        <NumberField
-          label={row.day.name}
-          hideLabel
-          value={days[row.index]}
-          onChange={text => setDay(row.index, text)}
-          invalid={week.days[row.index].invalid}
-          hint={week.days[row.index].invalid ? MILES_HINT : undefined}
-          className={spreadDays.has(row.index) ? 'spread' : ''}
-        />
-      ),
+      render: row => dayField(row.index),
     },
-    { key: 'total', label: 'Week so far', align: 'r', kind: 'q', phone: 'endsub', render: row => (week.totals[row.index] ? formatMiles(week.totals[row.index]) : '–') },
+    // under the day's name, so a row is no taller than its field
+    { key: 'total', label: 'Week so far', kind: 'q', phone: 'sub', render: row => (week.totals[row.index] ? `${formatMiles(week.totals[row.index])} so far` : '–') },
   ]
   const rows = [
     ...DAYS.map((day, index) => ({ key: day.key, day, index })),
     { key: 'goal', line: goalLine(week) },
   ]
 
+  // A day's field, the same in the table and on the board.
+  function dayField(index) {
+    return (
+      <NumberField
+        label={DAYS[index].name}
+        hideLabel
+        value={days[index]}
+        onChange={text => setDay(index, text)}
+        invalid={week.days[index].invalid}
+        hint={week.days[index].invalid ? MILES_HINT : undefined}
+        className={spreadDays.has(index) ? 'spread' : ''}
+      />
+    )
+  }
+
   return (
-    <>
-      <HeroCard title="Weekly mileage" number={<Answer week={week} />} lead={<Lead week={week} />}>
+    <div className="mileage">
+      <HeroCard className="stacked" title="Weekly mileage" number={<Answer week={week} />} lead={<Lead week={week} />}>
         <div className="controls">
           <NumberField
             label="Weekly goal"
@@ -83,19 +92,33 @@ export default function MileagePlanner() {
           />
           <Button onClick={spreadRest} disabled={week.state !== 'open'}>Spread the rest over open days</Button>
           <Button quiet onClick={clear} disabled={days.every(text => text === '')}>Clear the week</Button>
-          {week.state !== 'open' && <p className="note">{whyNoSpread(week)}</p>}
+          {/* on target or over, the lead already says why there's nothing to spread */}
+          {(week.state === 'no-goal' || week.state === 'full') && <p className="note">{whyNoSpread(week)}</p>}
         </div>
         <p className="vh" role="status">{said}</p>
       </HeroCard>
-      <div className="mileage-grid">
-        <TrackCard title="The week" caption={caption(week)}>
-          <WeekChart week={week} spreadDays={spreadDays} />
-        </TrackCard>
+      <TrackCard title="The week" caption={caption(week)} className="week">
+        <WeekChart week={week} spreadDays={spreadDays} labels={phone} />
+        {!phone && (
+          <div className="board">
+            {DAYS.map((day, index) => (
+              <div key={day.key} className="board-day">
+                <span className="board-name" aria-hidden="true">{day.short}</span>
+                {dayField(index)}
+                <span className="board-note">
+                  {spreadDays.has(index) ? 'spread' : week.totals[index] && !week.days[index].open ? `${formatMiles(week.totals[index])} so far` : ''}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </TrackCard>
+      {phone && (
         <Card title="The days" className="days">
           <DataTable caption="Miles for each day of the week" columns={columns} rows={rows} />
         </Card>
-      </div>
-    </>
+      )}
+    </div>
   )
 }
 
@@ -126,8 +149,7 @@ function Lead({ week }) {
 
 function whyNoSpread(week) {
   if (week.state === 'no-goal') return 'Set a goal to spread what’s left over the open days.'
-  if (week.state === 'full') return 'Every day has miles. Clear one to spread onto it.'
-  return 'Nothing left to spread.'
+  return 'Every day has miles. Clear one to spread onto it.'
 }
 
 function goalLine(week) {

@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { Card } from '../../kit/Card'
 import { DataTable } from '../../kit/DataTable'
-import { DetailCard } from '../../kit/DetailCard'
-import { Details, HeroCard } from '../../kit/HeroCard'
+import { HeroCard } from '../../kit/HeroCard'
 import { NumberField } from '../../kit/NumberField'
 import { PillChoice } from '../../kit/Pills'
+import { Stats } from '../../kit/Stats'
 import { TrackCard } from '../../kit/TrackCard'
+import { useMedia } from '../../kit/useMedia'
 import { LapStrip } from './LapStrip'
 import {
   DISTANCES, MAX_LAPS, TRACKS, formatClock, formatMeters, formatSplit, raceName, readChoice, readTime, splits,
@@ -29,6 +30,7 @@ export default function SplitCalculator() {
   const result = goal.seconds && race.meters && lap.meters ? splits(goal.seconds, race.meters, lap.meters) : null
   const name = race.meters ? raceName(distance, race.meters) : null
   const clock = goal.seconds ? formatClock(goal.seconds) : null
+  const wide = useMedia('(min-width: 1100px)')
 
   const columns = [
     { key: 'label', label: 'Lap', kind: 'q', phone: 'lead' },
@@ -40,60 +42,72 @@ export default function SplitCalculator() {
     { key: 'total', label: 'Clock', align: 'r', kind: 'q', phone: 'endsub', render: row => formatClock(row.total) },
   ]
 
+  const choices = (
+    <div className="choices">
+      <div className="choice">
+        <span className="choice-l" aria-hidden="true">Race</span>
+        <PillChoice legend="Race distance" name="distance" className="wrapping" value={distance} onChange={setDistance} options={DISTANCES} />
+        {distance === 'other' && (
+          <NumberField
+            label="Race distance"
+            unit="m"
+            value={customDistance}
+            onChange={setCustomDistance}
+            placeholder="1200"
+            invalid={race.reason === 'invalid'}
+            hint={race.reason === 'invalid' ? METRES_HINT : undefined}
+          />
+        )}
+      </div>
+      <div className="choice">
+        <span className="choice-l" aria-hidden="true">Track</span>
+        <PillChoice legend="Track length" name="track" value={track} onChange={setTrack} options={TRACKS} />
+        {track === 'other' && (
+          <NumberField
+            label="Track length"
+            unit="m"
+            value={customTrack}
+            onChange={setCustomTrack}
+            placeholder="300"
+            invalid={lap.reason === 'invalid'}
+            hint={lap.reason === 'invalid' ? METRES_HINT : undefined}
+          />
+        )}
+      </div>
+    </div>
+  )
+  const strip = result && (
+    <TrackCard title="The race" caption={caption(result)}>
+      <LapStrip rows={result.rows} distance={race.meters} standing={wide} />
+    </TrackCard>
+  )
+
   return (
     <>
+      {/* the time is the answer; the race, the track and the paces it gives sit beside it */}
       <HeroCard
         title="Track splits"
         number={<TimeField {...time} invalid={goal.invalid} onChange={(key, text) => setTime(old => ({ ...old, [key]: text }))} />}
         lead={<Lead goal={goal} race={race} lap={lap} result={result} name={name} clock={clock} />}
       >
+        {choices}
         {result && (
-          <Details>
-            <DetailCard title="Per kilometre"><b>{formatClock(result.pace.perKm)}</b> for each kilometre.</DetailCard>
-            <DetailCard title="Per mile"><b>{formatClock(result.pace.perMile)}</b> for each mile.</DetailCard>
-            {lap.meters !== 400 && <DetailCard title="Per 400 m"><b>{formatSplit(result.pace.per400)}</b> for each 400 m.</DetailCard>}
-          </Details>
+          <Stats
+            items={[
+              { label: 'Per lap', value: formatSplit(result.pace.perLap), accent: true },
+              ...(lap.meters !== 400 ? [{ label: 'Per 400 m', value: formatSplit(result.pace.per400) }] : []),
+              { label: 'Per km', value: formatClock(result.pace.perKm) },
+              { label: 'Per mile', value: formatClock(result.pace.perMile) },
+            ]}
+          />
         )}
       </HeroCard>
 
-      <div className="choices">
-        <div className="choice">
-          <span className="choice-l" aria-hidden="true">Race</span>
-          <PillChoice legend="Race distance" name="distance" className="wrapping" value={distance} onChange={setDistance} options={DISTANCES} />
-          {distance === 'other' && (
-            <NumberField
-              label="Race distance"
-              unit="m"
-              value={customDistance}
-              onChange={setCustomDistance}
-              placeholder="1200"
-              invalid={race.reason === 'invalid'}
-              hint={race.reason === 'invalid' ? METRES_HINT : undefined}
-            />
-          )}
-        </div>
-        <div className="choice">
-          <span className="choice-l" aria-hidden="true">Track</span>
-          <PillChoice legend="Track length" name="track" value={track} onChange={setTrack} options={TRACKS} />
-          {track === 'other' && (
-            <NumberField
-              label="Track length"
-              unit="m"
-              value={customTrack}
-              onChange={setCustomTrack}
-              placeholder="300"
-              invalid={lap.reason === 'invalid'}
-              hint={lap.reason === 'invalid' ? METRES_HINT : undefined}
-            />
-          )}
-        </div>
-      </div>
-
+      {/* wide, the race stands up beside the table and stays in view as it scrolls; narrower, it lies
+          across the page above it */}
       {result && (
-        <div className="splits-grid">
-          <TrackCard title="The race" caption={caption(result)}>
-            <LapStrip rows={result.rows} distance={race.meters} />
-          </TrackCard>
+        <div className={`splits-grid${wide ? ' wide' : ''}`}>
+          {!wide && strip}
           <Card title="The splits">
             <DataTable
               caption={`Splits for a ${clock} ${name} on a ${formatMeters(lap.meters)} track`}
@@ -101,6 +115,7 @@ export default function SplitCalculator() {
               rows={[...result.rows, { key: 'finish', line: { label: `Finish · ${name}`, value: clock } }]}
             />
           </Card>
+          {wide && <div className="rail">{strip}</div>}
         </div>
       )}
     </>

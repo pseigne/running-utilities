@@ -9,6 +9,7 @@ import { FinishLine } from '../src/kit/FinishLine'
 import { Header } from '../src/kit/Header'
 import { Details, HeroCard } from '../src/kit/HeroCard'
 import { NumberField } from '../src/kit/NumberField'
+import { Stats } from '../src/kit/Stats'
 import { PillChoice, PillLinks } from '../src/kit/Pills'
 import { TrackCard } from '../src/kit/TrackCard'
 
@@ -24,9 +25,15 @@ describe('HeroCard and BigNumber', () => {
     expect(document.querySelector('.lead').textContent).toBe('26 to go.')
   })
 
-  it('leaves out the number row when there is nothing for it', () => {
+  it('puts the lead and its children beside the title and number, and leaves that column out when empty', () => {
+    render(<HeroCard title="With" number={<BigNumber value="4" />} lead="Words."><button type="button">Act</button></HeroCard>)
+    const side = document.querySelector('.hero-side')
+    expect(document.querySelector('.hero-main').textContent).toBe('With4')
+    expect(side.querySelector('.lead').textContent).toBe('Words.')
+    expect(side.contains(screen.getByRole('button', { name: 'Act' }))).toBe(true)
+    cleanup()
     render(<HeroCard title="Empty" />)
-    expect(document.querySelector('.hero')).toBeNull()
+    expect(document.querySelector('.hero-side')).toBeNull()
   })
 
   it('takes children as the number and hides the symbol from screen readers', () => {
@@ -213,5 +220,16 @@ describe('PillChoice', () => {
     fireEvent.click(screen.getByRole('radio', { name: '1500 m' }))
     expect(screen.getByRole('radio', { name: '1500 m' }).checked).toBe(true)
     expect(screen.getByRole('radio', { name: '800 m' }).checked).toBe(false)
+  })
+})
+
+describe('Stats', () => {
+  it('is a list of labelled figures, one of them accented', () => {
+    render(<Stats items={[{ label: 'Per lap', value: '59.65', accent: true }, { label: 'Per km', value: '2:29.13' }]} />)
+    const terms = [...document.querySelectorAll('.stats dt')].map(dt => dt.textContent)
+    const values = [...document.querySelectorAll('.stats dd')].map(dd => dd.textContent)
+    expect(terms).toEqual(['Per lap', 'Per km'])
+    expect(values).toEqual(['59.65', '2:29.13'])
+    expect(document.querySelector('.stats .accent dt').textContent).toBe('Per lap')
   })
 })

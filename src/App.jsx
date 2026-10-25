@@ -28,17 +28,18 @@ export default function App() {
   return (
     <>
       <a className="skip" href="#main" onClick={skipToTool}>Skip to the tool</a>
+      {/* the tool switch is the nav's control, so the page starts with the tool itself */}
       <Header title={SITE_TITLE} href={`#${TOOLS[0].slug}`}>
+        <PillLinks
+          label="Tools"
+          className="toolswitch"
+          items={TOOLS.map(item => ({ key: item.slug, label: item.label, short: item.short, href: `#${item.slug}` }))}
+          current={gallery ? null : tool.slug}
+        />
         <a className="navlink press" href="https://pierceseigne.com/" target="_top">pierceseigne.com{OUT}</a>
       </Header>
       <div className="wrap">
         <main id="main" tabIndex={-1}>
-          <PillLinks
-            label="Tools"
-            className="toolswitch"
-            items={TOOLS.map(item => ({ key: item.slug, label: item.label, href: `#${item.slug}` }))}
-            current={tool.slug}
-          />
           {gallery && <section data-tool="kit"><Suspense fallback={null}><Gallery /></Suspense></section>}
           {/* every tool stays mounted, so what was typed into one survives a visit to the other */}
           {TOOLS.map(({ slug, Component }) => (

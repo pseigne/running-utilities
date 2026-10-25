@@ -1,27 +1,54 @@
 /* the goal and the actions sit under the answer, across a rule */
-.controls{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 16px;margin-top:22px;padding-top:18px;border-top:1px solid var(--rule)}
+.controls{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 16px;width:100%;padding-top:16px;border-top:1px solid var(--rule)}
 .controls .field{width:170px}
 .controls .note{flex-basis:100%;font-size:14px;color:var(--ink-2)}
 
-/* from 1100px the week and the days sit side by side */
-.mileage-grid{display:grid;gap:0 16px}
-@media (min-width: 1100px){ .mileage-grid{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:start} }
+/* the week: the chart fills what the card has, the board's fields line up under the bars */
+.week .plot{display:flex;flex-direction:column}
+.week-chart{position:relative;flex:1;min-height:240px}
+.week-chart.labelled{flex:none;height:200px;min-height:0}
+.week-chart svg{position:absolute;inset:0}
+.board{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));margin-top:8px}
+.board-day{display:flex;flex-direction:column;align-items:stretch;gap:4px;min-width:0;padding:0 4px;text-align:center}
+.board-name{font-size:14px;color:#fff}
+.board .field input{text-align:center;padding:0 4px}
+.board .field-hint{font-size:12px;line-height:1.25}
+.board-note{min-height:18px;font-size:13px;color:#fff}
+
+/* fields on the track are white boxes with dark figures, like race bibs */
+.trackcard .field-box{--bg:#fff;--ink:#151515;--ink-2:#5c5c58;border-color:#fff}
+.trackcard .field[data-invalid] .field-box{border-color:#151515}
+.trackcard .field[data-invalid] .field-hint{color:#fff;font-weight:600}
+.field.spread input{color:var(--ink-2);font-weight:400}
 
 .days td{height:56px}
 .days .field{width:120px}
 .days .field-hint{max-width:120px;text-align:right}
-.days .field.spread input{color:var(--ink-2);font-weight:400}
 .tag{margin-left:8px;font-size:13px;font-weight:400;font-stretch:100%;color:var(--ink-2)}
 
-/* the week: white bars that grow from the lane, the line sliding to the average */
+/* bars grow from the lane */
 .trackcard .bar{fill:#fff;transform-box:fill-box;transform-origin:50% 100%;transition:transform var(--run) var(--ease)}
 .trackcard .bar.spread{fill:none;stroke:#fff;stroke-width:2;vector-effect:non-scaling-stroke}
+
+/* wide: the answer is a column on the left, the week fills the rest at the same height */
+@media (min-width: 1100px){
+  .mileage{display:grid;grid-template-columns:minmax(340px,380px) minmax(0,1fr);gap:0 16px;align-items:stretch}
+  .mileage .herocard.stacked{display:block}
+  .mileage .week{display:flex;flex-direction:column}
+  .mileage .week .plot{flex:1}
+  .mileage .controls{display:grid;grid-template-columns:1fr}
+  .mileage .controls .field{width:100%}
+  .mileage .controls .more{justify-self:start;margin-left:-12px}
+}
 
 @media (max-width: 720px){
   .controls{gap:12px}
   .controls .field{width:100%}
   .controls .btn{flex:1}
   .days td{height:auto}
-  .days tbody tr[data-row]{align-items:center}
+  .days tbody tr[data-row]{align-items:center;padding:6px 0}
+  .days td[data-phone="sub"]{font-size:13px}
+  /* the field spans both lines of the row, so the name and its total sit beside it */
+  .days td[data-phone="end"]{grid-row:1 / span 2}
   .days .field{width:110px}
 }
