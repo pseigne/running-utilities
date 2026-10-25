@@ -1,6 +1,6 @@
 # Redesign plan: Running Utilities on the heat sheet
 
-Branch: `redesign/heat-sheet`. Design source: [`design.md`](design.md), copied from
+Branch: `redesign/heat-sheet`. Status: all eight phases done; notes below record where the build differs from the first draft. Design source: [`design.md`](design.md), copied from
 `ncaa-indoor-qualification` (its CSS is the reference implementation).
 
 ## Goal
@@ -116,9 +116,10 @@ The question: *how many miles are left this week, and where do they go?*
    left."). The goal is a big `NumberField` on the black card.
 2. **Track card: the week**: seven columns, one per day, white bars to scale. Days you entered are
    filled white; days filled by spreading are hollow white outlines (the same filled/hollow language as
-   in/out runners). **The line** is a 3px black horizontal stroke at the even daily average that reaches
-   the goal, labelled "8.7 mi a day to reach 50". The caption explains it in a sentence. Bars animate over
-   `--run`, and don't animate with reduced motion.
+   in/out runners). **The line** is a 3px black horizontal stroke at the daily average that makes the goal
+   (goal ÷ 7), keyed above the plot as "7.14 a day makes 50"; each day's miles sit under its name so no
+   words sit inside the plot. The caption explains it in a sentence. Bars animate over `--run`, and don't
+   animate with reduced motion.
 3. **Table card: the days**: `DataTable` rows Mon–Sun: day (18px cond 600), a `NumberField`, and a
    running total in `--ink-2`. Spread values show in `--ink-2` with a "spread" note until edited. A
    `FinishLine` under Sunday: "Goal · 50 mi".
@@ -140,9 +141,10 @@ The question: *what do I need to run each lap?*
 2. **Choices**: two `Pills` groups (radio mode) on the ground: distance (800 m, 1500 m, Mile, 3000 m,
    5000 m, 10,000 m, Other) and track (200 m, 400 m, Other). "Other" reveals a labelled metres field
    inline, never a placeholder-only input.
-3. **Track card: the lap strip**: one lane per lap, a white dot at each split with its cumulative time,
-   the start offset drawn as a short first segment ("Start 9 m before the line" for a mile on a 400),
-   and the finish as the black line. The caption says it in a sentence.
+3. **Track card: the lap strip**: the race as one lane, a white dot where each lap ends with the clock
+   above and the distance below (thinned where laps crowd; the table has them all), the short first
+   stretch of a race that isn't whole laps, and the finish as the black line. The caption says it in a
+   sentence.
 4. **Table card: the splits**: Lap · Distance · Split · Cumulative in `DataTable`: 40px rows,
    right-aligned tabular marks, the first partial lap labelled as such, a `FinishLine` with the goal
    time at the end, and the phone grid layout from design.md.
