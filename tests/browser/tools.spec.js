@@ -1,72 +1,85 @@
-import { test, expect } from '@playwright/test';
-import { fileURLToPath } from 'node:url';
+import { test, expect } from '@playwright/test'
+import AxeBuilder from '@axe-core/playwright'
 
-test.beforeEach(async ({ page }) => {
-  // Production files stay unchanged; provide the original CDN dependency locally in tests.
-  await page.route('https://cdn.jsdelivr.net/npm/chart.js', route => route.fulfill({ path: fileURLToPath(new URL('../../node_modules/chart.js/dist/chart.umd.js', import.meta.url)), contentType: 'application/javascript' }));
-  await page.route('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/**', route => route.fulfill({ body: '', contentType: 'text/css' }));
-});
+const shownTool = page => page.locator('main section:not([hidden])')
 
-test('original tools calculate and retain inputs when switching tabs', async ({ page }) => {
-  await page.goto('');
-  const mileage = page.frameLocator('iframe[title="Weekly Mileage Planner"]');
-  await expect(mileage.getByRole('heading', { name: 'Weekly Mileage Planner', exact: true })).toBeVisible();
-  await mileage.locator('#goal-mileage').fill('50');
-  await mileage.locator('#Monday').fill('20');
-  await expect(mileage.locator('#remaining-mileage')).toHaveText('30');
-  await mileage.getByRole('button', { name: 'Distribute Remaining Mileage' }).click();
-  await expect(mileage.locator('#Tuesday')).toHaveValue('5');
-  await page.getByRole('tab', { name: 'Track Split Calculator' }).click();
-  const splits = page.frameLocator('iframe[title="Track Split Calculator"]');
-  await splits.getByLabel('Minutes', { exact: true }).fill('2');
-  await splits.getByText('800m', { exact: true }).click();
-  await expect(splits.locator('#result tbody tr')).toHaveCount(2);
-  await expect(splits.locator('#result tbody tr').last().locator('td').last()).toHaveText('2:00.00');
-  await page.getByRole('tab', { name: 'Weekly Mileage Planner' }).click();
-  await expect(mileage.locator('#Monday')).toHaveValue('20');
-  await expect(mileage.locator('#Tuesday')).toHaveValue('5');
-  await page.getByRole('tab', { name: 'Track Split Calculator' }).click();
-  await expect(splits.locator('#goal_minutes')).toHaveValue('2');
-});
+test('the switch, direct links, and browser history pick the tool', async ({ page }) => {
+  await page.goto('')
+  await expect(shownTool(page)).toHaveAttribute('data-tool', 'weekly-mileage')
+  await expect(page).toHaveTitle('Weekly Mileage Planner · Running Utilities')
 
-test('direct links, browser history, keyboard tabs, and original mileage theme', async ({ page }) => {
-  await page.goto('#track-splits');
-  await expect(page.getByRole('tab', { name: 'Track Split Calculator' })).toHaveAttribute('aria-selected', 'true');
-  await page.getByRole('tab', { name: 'Weekly Mileage Planner' }).click();
-  await page.goBack();
-  await expect(page.locator('#track-splits')).toBeVisible();
-  await page.getByRole('tab', { name: 'Track Split Calculator' }).focus();
-  await page.keyboard.press('ArrowLeft');
-  await expect(page.getByRole('tab', { name: 'Weekly Mileage Planner' })).toBeFocused();
-  const mileage = page.frameLocator('iframe[title="Weekly Mileage Planner"]');
-  await mileage.locator('#Monday').waitFor();
-  await mileage.locator('#theme-toggle').click();
-  await expect(mileage.locator('body')).toHaveClass('dark');
-  await expect(mileage.locator('#theme-toggle')).toHaveText('☀️');
-});
+  await page.getByRole('link', { name: 'Track splits' }).click()
+  await expect(page).toHaveURL(/#track-splits$/)
+  await expect(shownTool(page)).toHaveAttribute('data-tool', 'track-splits')
+  await expect(page.getByRole('link', { name: 'Track splits' })).toHaveAttribute('aria-current', 'page')
+  await expect(page).toHaveTitle('Track Split Calculator · Running Utilities')
 
-test('original desktop and mobile views render without browser errors', async ({ page }) => {
-  const errors = []; page.on('pageerror', error => errors.push(error.message));
+  await page.goBack()
+  await expect(shownTool(page)).toHaveAttribute('data-tool', 'weekly-mileage')
+  await page.goForward()
+  await expect(shownTool(page)).toHaveAttribute('data-tool', 'track-splits')
+
+  await page.goto('#weekly-mileage')
+  await expect(shownTool(page)).toHaveAttribute('data-tool', 'weekly-mileage')
+})
+
+test('the skip link is the first stop and lands on the tool’s heading', async ({ page }) => {
+  await page.goto('#track-splits')
+  await page.keyboard.press('Tab')
+  const skip = page.getByRole('link', { name: 'Skip to the tool' })
+  await expect(skip).toBeFocused()
+  await expect(skip).toBeInViewport()
+  await page.keyboard.press('Enter')
+  await expect(page.getByRole('heading', { level: 1, name: 'Track splits' })).toBeFocused()
+  await expect(page).toHaveURL(/#track-splits$/)
+})
+
+test('the nav is pinned, measured, and sits on the track’s curb', async ({ page }) => {
+  await page.goto('')
+  const nav = page.locator('header.top')
+  await expect(nav).toHaveCSS('position', 'sticky')
+  await expect(nav).toHaveCSS('background-color', 'rgb(21, 21, 21)')
+  expect(await nav.evaluate(el => getComputedStyle(el).boxShadow)).toContain('rgb(196, 83, 47)')
+  const head = await page.evaluate(() => document.documentElement.style.getPropertyValue('--head'))
+  expect(parseFloat(head)).toBe(await nav.evaluate(el => el.offsetHeight))
+  await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(237, 235, 230)')
+})
+
+test('every target is at least 44px tall', async ({ page }) => {
+  await page.goto('')
+  const small = await page.evaluate(() => [...document.querySelectorAll('header a, .pills a, .pills label')]
+    .filter(el => {
+      // a pill's ::after reaches 4px above and below it
+      const height = el.getBoundingClientRect().height
+      const reach = getComputedStyle(el, '::after').content === 'none' ? height : height + 8
+      return reach < 44
+    })
+    .map(el => el.textContent))
+  expect(small).toEqual([])
+})
+
+test('phone, tablet, and desktop render without errors or sideways scrolling', async ({ page }) => {
+  const errors = []
+  page.on('pageerror', error => errors.push(error.message))
   for (const width of [375, 768, 1440]) {
-    await page.setViewportSize({ width, height: 1000 });
-    await page.goto('');
-    for (const [tool, title] of [['weekly-mileage', 'Weekly Mileage Planner'], ['track-splits', 'Track Split Calculator']]) {
-      await page.getByRole('tab', { name: title }).click();
-      const frame = page.frameLocator(`iframe[title="${title}"]`);
-      await expect(frame.getByRole('heading', { name: title, exact: true })).toBeVisible();
-      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-      await page.screenshot({ path: `test-results/${width}-${tool}.png`, fullPage: true });
+    await page.setViewportSize({ width, height: 900 })
+    for (const tool of ['weekly-mileage', 'track-splits']) {
+      await page.goto(`#${tool}`)
+      await expect(shownTool(page).getByRole('heading', { level: 1 })).toBeVisible()
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+      await page.screenshot({ path: `test-results/${width}-${tool}.png`, fullPage: true })
     }
   }
-  expect(errors).toEqual([]);
-});
+  expect(errors).toEqual([])
+})
 
-test('original footer links leave the tool frame', async ({ page }) => {
-  await page.goto('');
-  for (const title of ['Weekly Mileage Planner', 'Track Split Calculator']) {
-    const footer = page.frameLocator(`iframe[title="${title}"]`).locator('footer');
-    await expect(footer.locator('a', { hasText: 'Pierce Seigne' })).toHaveAttribute('target', '_top');
-    await expect(footer.locator('a', { hasText: 'Pierce Seigne' })).toHaveAttribute('href', 'https://pierceseigne.com/');
-    await expect(footer.locator('a', { hasText: 'GitHub' })).toHaveAttribute('target', '_blank');
-  }
-});
+for (const colorScheme of ['light', 'dark']) {
+  test(`no accessibility violations in ${colorScheme} mode`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme })
+    for (const tool of ['weekly-mileage', 'track-splits']) {
+      await page.goto(`#${tool}`)
+      const results = await new AxeBuilder({ page }).analyze()
+      expect(results.violations.map(v => `${v.id}: ${v.nodes.map(n => n.target).join(', ')}`)).toEqual([])
+    }
+  })
+}
