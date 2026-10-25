@@ -62,7 +62,7 @@ export default function MileagePlanner() {
         />
       ),
     },
-    { key: 'total', label: 'Week so far', align: 'r', kind: 'q', phone: 'endsub', render: row => formatMiles(week.totals[row.index]) },
+    { key: 'total', label: 'Week so far', align: 'r', kind: 'q', phone: 'endsub', render: row => (week.totals[row.index] ? formatMiles(week.totals[row.index]) : '–') },
   ]
   const rows = [
     ...DAYS.map((day, index) => ({ key: day.key, day, index })),

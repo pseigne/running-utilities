@@ -230,3 +230,56 @@ for (const colorScheme of ['light', 'dark']) {
     }
   })
 }
+
+test('with reduced motion, nothing on the track animates', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('#weekly-mileage')
+  const tool = shownTool(page)
+  await tool.getByRole('textbox', { name: 'Weekly goal' }).fill('30')
+  await tool.getByRole('textbox', { name: 'Monday', exact: true }).fill('10')
+  const durations = await page.evaluate(() => [...document.querySelectorAll('.trackcard .bar, .trackcard .move, .press')]
+    .filter(el => el.checkVisibility())
+    .map(el => getComputedStyle(el).transitionDuration))
+  expect(durations.length).toBeGreaterThan(0)
+  expect(new Set(durations.flatMap(d => d.split(', ')))).toEqual(new Set(['0s']))
+})
+
+for (const colorScheme of ['light', 'dark']) {
+  test(`no accessibility violations with both tools filled in, ${colorScheme}`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme })
+    await page.goto('#weekly-mileage')
+    let tool = shownTool(page)
+    await tool.getByRole('textbox', { name: 'Weekly goal' }).fill('40')
+    await tool.getByRole('textbox', { name: 'Monday', exact: true }).fill('8')
+    await tool.getByRole('textbox', { name: 'Tuesday' }).fill('x')
+    await tool.getByRole('button', { name: 'Spread the rest over open days' }).click()
+    let results = await new AxeBuilder({ page }).analyze()
+    expect(results.violations.map(v => `${v.id}: ${v.nodes.map(n => n.target).join(', ')}`)).toEqual([])
+    await page.getByRole('link', { name: 'Track splits' }).click()
+    tool = shownTool(page)
+    await tool.getByRole('textbox', { name: 'Minutes' }).fill('15')
+    await tool.getByRole('radio', { name: '5000 m' }).check({ force: true })
+    await tool.getByRole('radio', { name: 'Other' }).last().check({ force: true })
+    await tool.getByRole('textbox', { name: 'Track length' }).fill('300')
+    results = await new AxeBuilder({ page }).analyze()
+    expect(results.violations.map(v => `${v.id}: ${v.nodes.map(n => n.target).join(', ')}`)).toEqual([])
+  })
+}
+
+test('the page wears design.md’s heat sheet', async ({ page }) => {
+  await page.goto('#track-splits')
+  const tool = shownTool(page)
+  await tool.getByRole('textbox', { name: 'Minutes' }).fill('4')
+  const style = (selector, property) => page.locator(selector).first().evaluate((el, p) => getComputedStyle(el)[p], property)
+  expect(await style('html', 'fontFamily')).toMatch(/^Archivo/)
+  expect(await style('html', 'fontVariantNumeric')).toBe('tabular-nums')
+  expect(await style('[data-tool="track-splits"] .herocard', 'backgroundColor')).toBe('rgb(21, 21, 21)')
+  expect(await style('[data-tool="track-splits"] .herocard', 'borderRadius')).toBe('24px')
+  expect(await style('[data-tool="track-splits"] .card', 'borderRadius')).toBe('20px')
+  expect(await style('[data-tool="track-splits"] .card', 'backgroundColor')).toBe('rgb(255, 255, 255)')
+  expect(await style('[data-tool="track-splits"] .trackcard', 'backgroundColor')).toBe('rgb(196, 83, 47)')
+  expect(await style('[data-tool="track-splits"] .trackcard .the-line', 'strokeWidth')).toBe('3px')
+  expect(await style('[data-tool="track-splits"] .finish', 'borderTopColor')).toBe('rgb(196, 54, 27)')
+  expect(await style('[data-tool="track-splits"] h1', 'fontStretch')).toBe('72%')
+  expect(await style('[data-tool="track-splits"] .pills label:has(input:checked)', 'backgroundColor')).toBe('rgb(21, 21, 21)')
+})

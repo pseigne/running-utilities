@@ -42,8 +42,11 @@ describe('the mileage planner', () => {
     expect(screen.getByText('Nothing left to spread.')).toBeTruthy()
   })
 
-  it('keeps a running total down the table', () => {
+  it('keeps a running total down the table, with a dash until there is one', () => {
     render(<MileagePlanner />)
+    type('Tuesday', '6')
+    expect(document.querySelector('tbody tr[data-row]').cells[2].textContent).toBe('–')
+    type('Tuesday', '')
     type('Monday', '6')
     type('Wednesday', '4.5')
     const totals = [...document.querySelectorAll('tbody tr[data-row]')].map(row => row.cells[2].textContent)
