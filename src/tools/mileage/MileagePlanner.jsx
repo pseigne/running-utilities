@@ -2,18 +2,17 @@ import { useState } from 'react'
 import { BigNumber } from '../../kit/BigNumber'
 import { Button } from '../../kit/Button'
 import { Card } from '../../kit/Card'
-import { DataTable } from '../../kit/DataTable'
 import { HeroCard } from '../../kit/HeroCard'
 import { NumberField } from '../../kit/NumberField'
 import { TrackCard } from '../../kit/TrackCard'
-import { usePhone } from '../../kit/useMedia'
 import { DAYS, EMPTY_WEEK, formatMiles, spread, summarize } from './model'
 import { WeekChart } from './WeekChart'
 import './mileage.css'
 
 const MILES_HINT = 'Enter a number of miles.'
 
-// How many miles are left this week, and where they go.
+// The original planner's layout, top to bottom: the title, the week as a chart, a field for each day
+// with the goal and the button under them, and what's left.
 export default function MileagePlanner() {
   const [goal, setGoal] = useState('')
   const [days, setDays] = useState(EMPTY_WEEK)
@@ -21,8 +20,6 @@ export default function MileagePlanner() {
   const [spreadDays, setSpreadDays] = useState(() => new Set())
   const [said, setSaid] = useState('')
   const week = summarize(goal, days)
-  // Phones list the days in a table; wider screens put each day's field under its bar.
-  const phone = usePhone()
 
   const setDay = (index, text) => {
     setDays(old => old.with(index, text))
@@ -40,84 +37,47 @@ export default function MileagePlanner() {
     setSpreadDays(old => new Set([...old, ...result.spread]))
     setSaid(`Spread ${miles(week.remaining)} over ${count(result.spread.length, 'day')}.`)
   }
-  const clear = () => {
-    setDays(EMPTY_WEEK)
-    setSpreadDays(new Set())
-    setSaid('Cleared the week.')
-  }
-
-  const columns = [
-    {
-      key: 'day', label: 'Day', kind: 'em', phone: 'main',
-      render: row => <>{row.day.name}{spreadDays.has(row.index) && <span className="tag">spread</span>}</>,
-    },
-    {
-      key: 'miles', label: 'Miles', align: 'r', phone: 'end',
-      render: row => dayField(row.index),
-    },
-    // under the day's name, so a row is no taller than its field
-    { key: 'total', label: 'Week so far', kind: 'q', phone: 'sub', render: row => (week.totals[row.index] ? `${formatMiles(week.totals[row.index])} so far` : '–') },
-  ]
-  const rows = [
-    ...DAYS.map((day, index) => ({ key: day.key, day, index })),
-    { key: 'goal', line: goalLine(week) },
-  ]
-
-  // A day's field, the same in the table and on the board.
-  function dayField(index) {
-    return (
-      <NumberField
-        label={DAYS[index].name}
-        hideLabel
-        value={days[index]}
-        onChange={text => setDay(index, text)}
-        invalid={week.days[index].invalid}
-        hint={week.days[index].invalid ? MILES_HINT : undefined}
-        className={spreadDays.has(index) ? 'spread' : ''}
-      />
-    )
-  }
 
   return (
     <div className="mileage">
-      <HeroCard className="stacked" title="Weekly mileage" number={<Answer week={week} />} lead={<Lead week={week} />}>
-        <div className="controls">
-          <NumberField
-            label="Weekly goal"
-            value={goal}
-            onChange={setGoal}
-            unit="mi"
-            invalid={week.goalInvalid}
-            hint={week.goalInvalid ? 'Enter the goal as a number of miles.' : undefined}
-          />
-          <Button onClick={spreadRest} disabled={week.state !== 'open'}>Spread the rest over open days</Button>
-          <Button quiet onClick={clear} disabled={days.every(text => text === '')}>Clear the week</Button>
-          {/* on target or over, the lead already says why there's nothing to spread */}
-          {(week.state === 'no-goal' || week.state === 'full') && <p className="note">{whyNoSpread(week)}</p>}
-        </div>
-        <p className="vh" role="status">{said}</p>
-      </HeroCard>
-      <TrackCard title="The week" caption={caption(week)} className="week">
-        <WeekChart week={week} spreadDays={spreadDays} labels={phone} />
-        {!phone && (
-          <div className="board">
-            {DAYS.map((day, index) => (
-              <div key={day.key} className="board-day">
-                <span className="board-name" aria-hidden="true">{day.short}</span>
-                {dayField(index)}
-                <span className="board-note">
-                  {spreadDays.has(index) ? 'spread' : week.totals[index] && !week.days[index].open ? `${formatMiles(week.totals[index])} so far` : ''}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
+      <h1 className="tool-title">Weekly Mileage Planner</h1>
+
+      <TrackCard caption={caption(week)} className="week">
+        <WeekChart week={week} spreadDays={spreadDays} />
       </TrackCard>
-      {phone && (
-        <Card title="The days" className="days">
-          <DataTable caption="Miles for each day of the week" columns={columns} rows={rows} />
-        </Card>
-      )}
+
+      <Card className="inputs">
+        <div className="days">
+          {DAYS.map((day, index) => (
+            <NumberField
+              key={day.key}
+              label={day.name}
+              value={days[index]}
+              onChange={text => setDay(index, text)}
+              invalid={week.days[index].invalid}
+              hint={week.days[index].invalid ? MILES_HINT : undefined}
+              className={spreadDays.has(index) ? 'day spread' : 'day'}
+            />
+          ))}
+        </div>
+        <NumberField
+          label="Goal mileage"
+          value={goal}
+          onChange={setGoal}
+          unit="mi"
+          placeholder="0"
+          invalid={week.goalInvalid}
+          hint={week.goalInvalid ? 'Enter the goal as a number of miles.' : undefined}
+          className="goal"
+        />
+        <Button className="spread-btn" onClick={spreadRest} disabled={week.state !== 'open'}>
+          Distribute remaining mileage
+        </Button>
+        {week.state !== 'open' && <p className="note">{whyNoSpread(week)}</p>}
+        <p className="vh" role="status">{said}</p>
+      </Card>
+
+      <HeroCard className="remaining" level={2} title="Remaining mileage" number={<Answer week={week} />} />
     </div>
   )
 }
@@ -129,35 +89,12 @@ function Answer({ week }) {
   return <BigNumber value={formatMiles(week.remaining)} unit="mi to go" />
 }
 
-function Lead({ week }) {
-  const planned = formatMiles(week.planned)
-  const goal = week.goal === null ? null : formatMiles(week.goal)
-  switch (week.state) {
-    case 'no-goal':
-      if (week.goalInvalid) return 'Enter the goal as a number of miles to see what’s left.'
-      return week.planned > 0 ? `${miles(week.planned)} planned so far. Set a weekly goal to see what’s left.` : 'Set a weekly goal to see what’s left.'
-    case 'open':
-      return <>{planned} of {goal} miles planned. <b>{formatMiles(week.remaining)} to go</b> across {count(week.openDays, 'open day')}, about {formatMiles(week.perOpenDay)} a day.</>
-    case 'full':
-      return <>{planned} of {goal} miles planned, with every day filled. Add <b>{formatMiles(week.remaining)}</b> to a day to reach the goal.</>
-    case 'met':
-      return <>{goal} of {goal} miles planned. <b>The week is on target.</b></>
-    default:
-      return <>{miles(week.planned)} planned, <b>{formatMiles(-week.remaining)} over</b> your {goal}‑mile goal.</>
-  }
-}
-
+// Why the button can't spread anything right now.
 function whyNoSpread(week) {
   if (week.state === 'no-goal') return 'Set a goal to spread what’s left over the open days.'
-  return 'Every day has miles. Clear one to spread onto it.'
-}
-
-function goalLine(week) {
-  const goal = week.goal === null ? null : `${formatMiles(week.goal)} mi`
-  if (week.state === 'no-goal') return { label: 'No goal yet', off: true }
-  if (week.state === 'met') return { label: 'Goal reached', value: goal }
-  if (week.state === 'over') return { label: `Goal · ${formatMiles(-week.remaining)} mi over`, value: goal }
-  return { label: `Goal · ${formatMiles(week.remaining)} mi to go`, value: goal, off: true }
+  if (week.state === 'full') return 'Every day has miles. Clear one to spread onto it.'
+  if (week.state === 'met') return 'The week is on target.'
+  return 'The week is already over the goal.'
 }
 
 function caption(week) {

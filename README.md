@@ -5,11 +5,12 @@ A **weekly mileage planner** and a **track split calculator**, at **https://pier
 - **Weekly mileage**: set a weekly goal, enter the days you've planned, and see what's left. Spread the rest
   evenly over the open days, in tenths of a mile, with the week adding up to the goal exactly. The week is
   drawn on the track against the daily average that makes the goal.
-- **Track splits**: enter a goal time, pick a race and a track (or enter your own), and get the split and
-  the clock for every lap, with the short first stretch of races that aren't whole laps (the 300 m of a
-  1500, the 9 m of a mile) and the pace per kilometre and mile.
+- **Track splits**: enter a target time, pick a race and a track (or enter your own), and get the split and
+  the cumulative time for every lap, with the short first stretch of races that aren't whole laps (the
+  300 m of a 1500, the 9 m of a mile).
 
-Both tools use the heat-sheet design of the NCAA qualification tracker, described in [`design.md`](design.md).
+Both tools keep the layouts of the originals and wear the heat-sheet design of the NCAA qualification
+tracker, described in [`design.md`](design.md).
 Hash links (`#weekly-mileage`, `#track-splits`) open a tool directly and work with back and forward. Both
 tools stay loaded, so switching between them keeps what you typed.
 

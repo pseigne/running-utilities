@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef } from 'react'
 import { useMedia } from './useMedia'
 
 // The black nav with the track's curb under it: the site's name at left, one control at right. A short
-// name, when given, replaces the full one on narrow screens.
+// name, when given, replaces the full one on narrow screens. Without a title, the control sits centred.
 export function Header({ title, short, href, children }) {
   const ref = useRef(null)
   // The link is named by whichever title is showing, so the name always holds the visible words.
@@ -22,15 +22,17 @@ export function Header({ title, short, href, children }) {
     }
   }, [])
   return (
-    <header className="top" ref={ref}>
-      <a className="mark press" href={href}>
-        {short ? (
-          <>
-            <span className="mark-full" aria-hidden={narrow ? 'true' : undefined}>{title}</span>
-            <span className="mark-short" aria-hidden={narrow ? undefined : 'true'}>{short}</span>
-          </>
-        ) : title}
-      </a>
+    <header className={`top${title ? '' : ' centred'}`} ref={ref}>
+      {title && (
+        <a className="mark press" href={href}>
+          {short ? (
+            <>
+              <span className="mark-full" aria-hidden={narrow ? 'true' : undefined}>{title}</span>
+              <span className="mark-short" aria-hidden={narrow ? undefined : 'true'}>{short}</span>
+            </>
+          ) : title}
+        </a>
+      )}
       {children}
     </header>
   )

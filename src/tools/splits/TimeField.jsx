@@ -1,7 +1,7 @@
 import { NumberField } from '../../kit/NumberField'
 
-// The goal time as the hero's number: hours, minutes and seconds in three big fields that read as one
-// mark. Each has its own label, so it's clear which part goes where.
+// The target time: hours, minutes and seconds in three big fields side by side, each named by the label
+// under it, as in the original.
 export function TimeField({ hours, minutes, seconds, onChange, invalid }) {
   const part = (key, label, size, placeholder, inputMode) => (
     <NumberField
@@ -16,11 +16,9 @@ export function TimeField({ hours, minutes, seconds, onChange, invalid }) {
     />
   )
   return (
-    <div className="timefield" role="group" aria-label="Goal time">
-      {part('hours', 'Hours', 1, '0', 'numeric')}
-      <span className="colon" aria-hidden="true">:</span>
+    <div className="timefield" role="group" aria-label="Target time">
+      {part('hours', 'Hours', 2, '0', 'numeric')}
       {part('minutes', 'Minutes', 2, '00', 'numeric')}
-      <span className="colon" aria-hidden="true">:</span>
       {part('seconds', 'Seconds', 5, '00.00', 'decimal')}
     </div>
   )

@@ -9,17 +9,27 @@ const choose = (name, group = 'Race distance') => fireEvent.click(within(screen.
 // metres keep their unit on the same line with a non-breaking space; compare with plain ones
 const plain = text => text.replace(/\u00a0/g, ' ')
 const lead = () => plain(document.querySelector('.lead').textContent)
-const stats = () => [...document.querySelectorAll('.stats > div')].map(item => [item.querySelector('dt').textContent, item.querySelector('dd').textContent])
 const rows = () => [...document.querySelectorAll('tbody tr[data-row]')].map(row => [...row.cells].map(cell => plain(cell.textContent)))
 
 describe('the split calculator', () => {
+  it('lays out the original: the time, the race and the track down one card, the table under it', () => {
+    render(<SplitCalculator />)
+    type('Minutes', '4')
+    const card = document.querySelector('.splits-card')
+    expect([...card.querySelectorAll('h1, h2, .ask-small')].map(heading => heading.textContent))
+      .toEqual(['Track Split Calculator', 'Target time', 'Race distance', 'Track length'])
+    expect([...card.querySelectorAll('.timefield label')].map(label => label.textContent)).toEqual(['Hours', 'Minutes', 'Seconds'])
+    expect(card.nextElementSibling.querySelector('table')).toBeTruthy()
+    expect(screen.getAllByRole('columnheader').map(th => th.textContent)).toEqual(['Lap', 'Distance', 'Split', 'Cumulative'])
+  })
+
   it('starts on the mile and a 400, asking for a time', () => {
     render(<SplitCalculator />)
-    expect(screen.getByRole('heading', { level: 1, name: 'Track splits' })).toBeTruthy()
-    expect(screen.getByRole('group', { name: 'Goal time' })).toBeTruthy()
+    expect(screen.getByRole('heading', { level: 1, name: 'Track Split Calculator' })).toBeTruthy()
+    expect(screen.getByRole('group', { name: 'Target time' })).toBeTruthy()
     expect(screen.getByRole('radio', { name: 'Mile' }).checked).toBe(true)
     expect(screen.getByRole('radio', { name: '400 m' }).checked).toBe(true)
-    expect(lead()).toBe('Enter a goal time to see the split for every lap.')
+    expect(lead()).toBe('Enter a target time to see the split for every lap.')
     expect(screen.queryByRole('table')).toBeNull()
     expect(screen.queryByRole('figure')).toBeNull()
   })
@@ -33,23 +43,21 @@ describe('the split calculator', () => {
     expect(plain(document.querySelector('.finish').textContent)).toBe('Finish · 800 m2:00.00')
   })
 
-  it('gives a 4:00 mile its 9 m start, its laps, and its paces', () => {
+  it('gives a 4:00 mile its 9 m start and its laps', () => {
     render(<SplitCalculator />)
     type('Minutes', '4')
     expect(lead()).toBe('A 4:00.00 mile is 59.65 a lap on a 400 m track.')
     expect(rows()[0]).toEqual(['Start', '9 m', '1.399 m', '0:01.39'])
     expect(rows().at(-1)).toEqual(['4', '1,609 m', '59.65', '4:00.00'])
     expect(screen.getByRole('table', { name: 'Splits for a 4:00.00 mile on a 400\u00a0m track' })).toBeTruthy()
-    expect(stats()).toEqual([['Per lap', '59.65'], ['Per km', '2:29.13'], ['Per mile', '4:00.00']])
-    expect(plain(document.querySelector('figcaption').textContent)).toContain('The start is 9 m round from the line')
   })
 
-  it('switches tracks and adds the per-400 figure off a 400', () => {
+  it('switches tracks', () => {
     render(<SplitCalculator />)
     type('Minutes', '4')
     choose('200 m', 'Track length')
     expect(lead()).toBe('A 4:00.00 mile is 29.83 a lap on a 200 m track.')
-    expect(stats()[1]).toEqual(['Per 400 m', '59.65'])
+    expect(rows()).toHaveLength(9)
   })
 
   it('takes Other distances and tracks, asking for metres until they are valid', () => {
@@ -58,9 +66,9 @@ describe('the split calculator', () => {
     choose('Other')
     expect(screen.getAllByRole('radio', { name: 'Other' })[0].checked).toBe(true)
     expect(lead()).toBe('Enter the race distance in metres.')
-    type('Race distance', 'far')
+    type('Custom distance', 'far')
     expect(screen.getByText('Enter metres as a number, like 1200.')).toBeTruthy()
-    type('Race distance', '1200')
+    type('Custom distance', '1200')
     expect(rows()).toHaveLength(3)
     choose('Other', 'Track length')
     expect(lead()).toBe('Enter the track length in metres.')
@@ -72,9 +80,9 @@ describe('the split calculator', () => {
     render(<SplitCalculator />)
     type('Minutes', '2')
     choose('Other')
-    type('Race distance', '1200')
+    type('Custom distance', '1200')
     choose('800 m')
-    expect(screen.queryByRole('textbox', { name: 'Race distance' })).toBeNull()
+    expect(screen.queryByRole('textbox', { name: 'Custom distance' })).toBeNull()
     expect(rows()).toHaveLength(2)
   })
 

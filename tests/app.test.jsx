@@ -35,8 +35,8 @@ describe('the page', () => {
   it('opens on the mileage planner with no hash', () => {
     render(<App />)
     expect(shown()).toEqual(['weekly-mileage'])
-    expect(screen.getByRole('link', { name: 'Weekly mileage' }).getAttribute('aria-current')).toBe('page')
-    expect(screen.getByRole('link', { name: 'Track splits' }).hasAttribute('aria-current')).toBe(false)
+    expect(screen.getByRole('link', { name: 'Weekly Mileage Planner' }).getAttribute('aria-current')).toBe('page')
+    expect(screen.getByRole('link', { name: 'Track Split Calculator' }).hasAttribute('aria-current')).toBe(false)
     expect(document.title).toBe('Weekly Mileage Planner · Running Utilities')
   })
 
@@ -68,7 +68,7 @@ describe('the page', () => {
     window.history.replaceState(null, '', '/#track-splits')
     render(<App />)
     fireEvent.click(screen.getByRole('link', { name: 'Skip to the tool' }))
-    expect(document.activeElement).toBe(screen.getByRole('heading', { level: 1, name: 'Track splits' }))
+    expect(document.activeElement).toBe(screen.getByRole('heading', { level: 1, name: 'Track Split Calculator' }))
     expect(window.location.hash).toBe('#track-splits')
   })
 

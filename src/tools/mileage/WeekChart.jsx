@@ -9,13 +9,11 @@ const LABELS = 50
 // spread over open days, and the line at the daily average that makes the goal. Bars grow and the line
 // slides as the numbers change. It fills the height it's given. Words stay out of the plot, where bars
 // and the line would cross them: the line's label sits above with a key, and each day's name and miles
-// sit under it, unless the week board's fields are there instead (labels false). The fields or the day
-// table carry the same numbers for screen readers.
-export function WeekChart({ week, spreadDays, labels = true }) {
+// sit under it. The day fields carry the same numbers for screen readers.
+export function WeekChart({ week, spreadDays }) {
   const ref = useRef(null)
   const { width, height } = useElementSize(ref)
-  const bottom = labels ? LABELS : 2
-  const plot = Math.max(height - TOP - bottom, 40)
+  const plot = Math.max(height - TOP - LABELS, 40)
   const values = week.days.map(day => (day.open || day.invalid ? 0 : day.miles))
   const max = Math.max(...values, week.average ?? 0, 1) * 1.08
   const column = width / DAYS.length
@@ -25,7 +23,7 @@ export function WeekChart({ week, spreadDays, labels = true }) {
   const key = week.average === null ? null : `${formatMiles(week.average)} a day makes ${formatMiles(week.goal)}`
 
   return (
-    <div className={`week-chart${labels ? ' labelled' : ''}`} ref={ref}>
+    <div className="week-chart" ref={ref}>
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} aria-hidden="true">
         <line className="lane" x1="0" x2={width} y1={base} y2={base} />
         {DAYS.map((day, index) => {
@@ -42,12 +40,8 @@ export function WeekChart({ week, spreadDays, labels = true }) {
                 height={plot}
                 style={{ transform: `scaleY(${miles / max})` }}
               />
-              {labels && (
-                <>
-                  <text x={x} y={height - 28} textAnchor="middle">{day.short}</text>
-                  <text className="k" x={x} y={height - 8} textAnchor="middle">{miles > 0 ? formatMiles(miles) : '–'}</text>
-                </>
-              )}
+              <text x={x} y={height - 28} textAnchor="middle">{day.short}</text>
+              <text className="k" x={x} y={height - 8} textAnchor="middle">{miles > 0 ? formatMiles(miles) : '–'}</text>
             </g>
           )
         })}

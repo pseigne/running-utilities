@@ -1,38 +1,39 @@
-/* the goal time: three big fields that read as one mark, joined by colons */
-.timefield{display:flex;align-items:flex-end;gap:2px;min-width:0}
-.timefield .field.big input{font-size:88px;padding:6px 10px 10px}
-.timefield .field-l{padding-left:2px}
-.colon{font-size:64px;line-height:1;font-weight:600;color:var(--ink-2);padding-bottom:14px}
+/* one centred column, about as wide as the original's six-inch card */
+.splits{max-width:620px;margin:0 auto}
 
-/* the race and the track, in the hero under the lead: a label, its pills, and the Other field */
-.choices{display:grid;gap:10px;width:100%}
-.choice{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;min-width:0}
-.choice-l{font-size:14px;color:var(--ink-2);min-width:44px}
-.choice .field{flex-direction:row;align-items:center;gap:10px}
-.choice .field .field-box{width:120px}
-.choice .field-hint{flex-basis:100%}
-/* seven distances wrap onto a second row when there isn't room for them in one */
-.pills.wrapping{flex-wrap:wrap;border-radius:22px}
+/* the card asks top to bottom, everything centred */
+.herocard.splits-card{display:flex;flex-direction:column;align-items:center;text-align:center;padding:28px 24px 24px}
+.splits-card h1{margin:4px 0 8px}
+.ask{font-size:22px;font-weight:600;font-stretch:var(--cond);margin:20px 0 12px}
+.ask-small{font-size:14px;color:var(--ink-2);margin:24px 0 8px}
 
-.splits-grid{display:grid;gap:0 16px}
-/* wide: the table, and the race standing up beside it, pinned under the nav while the table scrolls.
-   The rail is as tall as the table (at least 360px) and never taller than the screen. */
-.splits-grid.wide{grid-template-columns:minmax(0,1.3fr) minmax(300px,1fr);align-items:stretch}
-.splits-grid.wide > .card{align-self:start}
-.rail{min-height:360px;margin-bottom:16px}
-.rail .trackcard{position:sticky;top:calc(var(--head, 66px) + 16px);height:min(100%, calc(100vh - var(--head, 66px) - 32px));min-height:360px;margin:0;display:flex;flex-direction:column}
-.rail .trackcard .plot{flex:1;min-height:0}
-.strip.standing{position:relative;height:100%}
-.strip.standing svg{position:absolute;inset:0}
+/* the target time: three fields in a row, each labelled underneath */
+.timefield{display:flex;justify-content:center;gap:16px;min-width:0}
+.timefield .field{align-items:center}
+.timefield .field-l{order:1;margin-top:6px;font-size:15px}
+.timefield .field.big input{font-size:48px;padding:8px 14px 10px;text-align:center}
+
+/* race distances wrap and centre; the track lengths share the card's width evenly */
+.splits-card .pillset{max-width:100%}
+.pills.wrapping{flex-wrap:wrap;justify-content:center;border-radius:22px}
+.splits-card .pillset:has(.even){width:100%}
+.pills.even{display:flex;width:100%}
+.splits-card .custom{margin-top:14px;width:220px}
+.splits-card .custom .field-hint{text-align:center}
+
+/* where the original said "scroll to see splits": what the numbers make, or what's still missing */
+.splits-card .lead{margin-top:24px;font-size:17px;color:var(--ink-2)}
+.splits-card .lead b{color:var(--ink)}
+
+.tag{margin-left:8px;font-size:13px;font-weight:400;font-stretch:100%;color:var(--ink-2)}
 
 @media (max-width: 720px){
-  .timefield .field.big input{font-size:44px;padding:4px 8px 6px}
-  .timefield .field-l{font-size:13px}
-  .colon{font-size:36px;padding-bottom:8px}
-  .choice-l{flex-basis:100%}
-  /* on phones the distances fill a grid the width of the screen, four to a row */
-  .choice .pillset{flex-basis:100%}
+  .herocard.splits-card{padding:20px 16px 18px}
+  .ask{font-size:20px;margin:16px 0 10px}
+  .timefield{gap:10px}
+  .timefield .field.big input{font-size:36px;padding:6px 8px 8px}
+  /* on phones the distances fill a grid the width of the card, four to a row */
+  .splits-card .pillset:has(.wrapping){width:100%}
   .pills.wrapping{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
   .pills.wrapping label{padding:0 6px}
-  .stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px}
 }

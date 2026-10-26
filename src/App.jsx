@@ -7,12 +7,6 @@ import { findTool, TOOLS } from './tools'
 
 export const SITE_TITLE = 'Running Utilities'
 
-const OUT = (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true">
-    <path d="M7 17 17 7M9 7h8v8" />
-  </svg>
-)
-
 // The kit gallery exists on the dev server only; production builds leave it out.
 const Gallery = import.meta.env.DEV ? lazy(() => import('./kit/Gallery')) : null
 
@@ -28,15 +22,13 @@ export default function App() {
   return (
     <>
       <a className="skip" href="#main" onClick={skipToTool}>Skip to the tool</a>
-      {/* the tool switch is the nav's control, so the page starts with the tool itself */}
-      <Header title={SITE_TITLE} href={`#${TOOLS[0].slug}`}>
+      {/* the nav is the tool switch alone, centred, as the original tabs were */}
+      <Header>
         <PillLinks
           label="Tools"
-          className="toolswitch"
-          items={TOOLS.map(item => ({ key: item.slug, label: item.label, short: item.short, href: `#${item.slug}` }))}
+          items={TOOLS.map(item => ({ key: item.slug, label: item.name, short: item.short, href: `#${item.slug}` }))}
           current={gallery ? null : tool.slug}
         />
-        <a className="navlink press" href="https://pierceseigne.com/" target="_top">pierceseigne.com{OUT}</a>
       </Header>
       <div className="wrap">
         <main id="main" tabIndex={-1}>
@@ -48,8 +40,8 @@ export default function App() {
             </section>
           ))}
           <Source>
-            Built by <a href="https://pierceseigne.com/" target="_top">Pierce Seigne</a>.
-            Source on <a href="https://github.com/pseigne/running-utilities" target="_blank" rel="noopener noreferrer">GitHub</a>.
+            Designed &amp; built by <a href="https://pierceseigne.com/" target="_top">Pierce Seigne</a>.
+            View source on <a href="https://github.com/pseigne/running-utilities" target="_blank" rel="noopener noreferrer">GitHub</a>.
           </Source>
         </main>
       </div>
