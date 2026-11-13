@@ -1,0 +1,14 @@
+/* The tokens. Surfaces restyle their contents by reassigning these, never by hard-coding colors inside a
+   component. */
+:root{
+  /* the watch face: one dark ground in every scheme, paper type, the accent for the one number and the
+     miles that are run */
+  color-scheme: dark;
+  --bg:#121212; --ink:#F4F2EE; --ink-2:#A9A69F; --rule:#262625; --lane:#2a2a29; --sel:#1d1d1c; --ring:#3a3a38; --lanes:#3a201a; --lane-line:rgba(244,242,238,.75); --line:#FF7A57;
+  --cond: 72%; --ease: cubic-bezier(.2,.8,.2,1); --fast:120ms; --run:700ms;
+  --page:#121212; --page-rule:#262625; --page-sel:#222221; --card:#1c1c1b; --card-rule:#2c2c2a; --card-sel:#252524;
+  --nav:#121212; --hero:#121212; --paper:#F4F2EE; --track:#C4532F; --track-ink:#5a1c0c; --accent:#FF7A57;
+}
+@media (prefers-reduced-motion: reduce){
+  :root{--fast:0ms;--run:0ms}
+}
