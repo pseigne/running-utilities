@@ -1,39 +1,47 @@
-/* one centred column, as wide as the original's */
-.mileage{max-width:900px;margin:0 auto}
-.tool-title{text-align:center;margin:12px 0 24px}
+/* the original's order in the watch face: one column on the dark ground, no cards, the accent for the
+   miles that are run */
+.mileage{display:flex;flex-direction:column}
+.tool-title{margin:12px 0 24px;font-size:34px;text-align:center}
+.mileage .card,.mileage .herocard{--bg:var(--page);margin:0;padding:0;border-radius:0;background:none;box-shadow:none}
 
-/* the week: the chart at the original's height */
-.week-chart{position:relative;height:280px}
-.week-chart svg{position:absolute;inset:0}
+/* the week: the track's surface, white lines either side of each lane, the start line at the foot and
+   the finish across them at the daily average. They reach nearer the screen's edges than the rest */
+.week{margin:0 -8px}
+.lanes{position:relative;display:grid;grid-template-columns:repeat(7, minmax(0, 1fr));height:200px;background:var(--lanes);border-bottom:2px solid var(--paper)}
+.lanes .lane{position:relative;display:flex;align-items:flex-end;justify-content:center;border-left:2px solid var(--lane-line)}
+.lanes .lane:last-child{border-right:2px solid var(--lane-line)}
+.lanes .lane-run{width:calc(100% - 14px);border-radius:4px 4px 0 0;background:var(--accent);transition:height var(--run) var(--ease)}
+.lanes .lane-run.spread{background:none;box-shadow:inset 0 0 0 2px var(--accent)}
+.lanes .lane-finish{position:absolute;left:0;right:0;height:0;border-top:2px dashed var(--paper);transition:bottom var(--run) var(--ease)}
+.lane-days{display:grid;grid-template-columns:repeat(7, minmax(0, 1fr));margin-top:8px}
+.lane-days p{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--ink-2)}
+.lane-days b{font-size:14px;font-weight:600;color:var(--ink)}
 
-/* the inputs: a field for each day in a row, wrapping on narrow screens, then the goal and the button */
-.inputs{padding:24px}
-.days{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:24px}
-.days .field{flex:1;min-width:75px;align-items:center;text-align:center}
-.days .field-box{align-self:stretch}
-.days .field input{text-align:center;padding:0 6px}
-.days .field-hint{font-size:12px;line-height:1.25}
-.field.spread input{color:var(--ink-2);font-weight:400}
+/* the inputs: a box for each day, four to a row and three under as the original wrapped, filled for
+   runs, outlined for shares that were spread, dashed while open; then the goal, underlined, and the
+   button */
+.mileage .inputs{margin-top:32px}
+.days{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px}
+.days .field{flex:1 1 calc((100% - 30px) / 4);min-width:0;align-items:center;text-align:center}
+.days .field-l{font-size:13px;color:var(--ink-2)}
+.days .field-box{align-self:stretch;min-height:56px;border-radius:14px;transition:background-color var(--fast) var(--ease),border-color var(--fast) var(--ease)}
+.days .field input{min-height:54px;padding:0 6px;text-align:center;font-size:18px}
+.day.open .field-box{border:1px dashed #5a5a57}
+.day.run .field-box{border-color:var(--accent);background:var(--accent)}
+.day.run input{color:var(--hero)}
+.day.spread .field-box{border:2px solid var(--accent)}
+.days .field[data-invalid] .field-box{background:none;border:2px solid var(--line)}
+.days .field[data-invalid] input{color:var(--ink)}
 .goal{flex-direction:row;flex-wrap:wrap;align-items:center;gap:12px;width:100%;margin-bottom:20px}
 .goal .field-l{font-size:15px;color:var(--ink)}
-.goal .field-box{flex:1}
-.goal .field-hint{flex-basis:100%}
-.spread-btn{width:100%}
-.inputs .note{margin-top:10px;text-align:center;font-size:14px;color:var(--ink-2)}
+.goal .field-box{flex:1;border:0;border-bottom:1px solid var(--ring);border-radius:0;background:none}
+.goal .field-box:focus-within{outline:none;border-bottom-color:var(--line)}
+.goal input{font-size:24px;text-align:right}
+.spread-btn{width:100%;min-height:52px;border-radius:999px;background:var(--paper);color:var(--bg);font-weight:600}
+.spread-btn:disabled{background:none;box-shadow:inset 0 0 0 1px var(--ring);color:var(--ink-2);cursor:default;transform:none}
 
-/* what's left: the answer, centred on black */
-.herocard.remaining{display:block;text-align:center}
-.remaining h2{font-size:20px;font-weight:400;font-stretch:100%;color:var(--ink-2);margin-bottom:12px}
-
-/* bars grow from the lane */
-.trackcard .bar{fill:#fff;transform-box:fill-box;transform-origin:50% 100%;transition:transform var(--run) var(--ease)}
-.trackcard .bar.spread{fill:none;stroke:#fff;stroke-width:2;vector-effect:non-scaling-stroke}
-
-@media (max-width: 720px){
-  .tool-title{margin:8px 0 16px}
-  .week-chart{height:220px}
-  .inputs{padding:16px}
-  .days{gap:10px}
-  /* four to a row and three under, as the original wrapped */
-  .days .field{min-width:64px}
-}
+/* what's left: the one number, centred */
+.mileage .herocard.remaining{display:block;margin-top:40px;text-align:center}
+.remaining h2{margin-bottom:4px;font-size:16px;font-weight:400;font-stretch:100%;color:var(--ink-2)}
+.remaining .num{display:flex;flex-direction:column;align-items:center;font-size:104px;font-stretch:78%;letter-spacing:-.04em}
+.remaining .num small{margin:6px 0 0;font-size:16px;letter-spacing:0}

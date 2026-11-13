@@ -22,11 +22,11 @@ export default function App() {
   return (
     <>
       <a className="skip" href="#main" onClick={skipToTool}>Skip to the tool</a>
-      {/* the nav is the tool switch alone, centred, as the original tabs were */}
+      {/* the nav is the tool switch alone, centred, by the tools' short names */}
       <Header>
         <PillLinks
           label="Tools"
-          items={TOOLS.map(item => ({ key: item.slug, label: item.name, short: item.short, href: `#${item.slug}` }))}
+          items={TOOLS.map(item => ({ key: item.slug, label: item.short, href: `#${item.slug}` }))}
           current={gallery ? null : tool.slug}
         />
       </Header>

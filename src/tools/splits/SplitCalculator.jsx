@@ -4,12 +4,10 @@ import { DataTable } from '../../kit/DataTable'
 import { NumberField } from '../../kit/NumberField'
 import { PillChoice } from '../../kit/Pills'
 import {
-  DISTANCES, MAX_LAPS, TRACKS, formatClock, formatMeters, formatSplit, raceName, readChoice, readTime, splits,
+  DISTANCES, TRACKS, formatClock, formatMeters, formatSplit, raceName, readChoice, readTime, splits,
 } from './model'
 import { TimeField } from './TimeField'
 import './splits.css'
-
-const METRES_HINT = 'Enter metres as a number, like 1200.'
 
 // The original calculator's layout: one centred card that asks for the target time, the race and the
 // track, top to bottom, with the splits in a table under it.
@@ -56,7 +54,6 @@ export default function SplitCalculator() {
             onChange={setCustomDistance}
             placeholder="1200"
             invalid={race.reason === 'invalid'}
-            hint={race.reason === 'invalid' ? METRES_HINT : undefined}
             className="custom"
           />
         )}
@@ -71,14 +68,11 @@ export default function SplitCalculator() {
             onChange={setCustomTrack}
             placeholder="300"
             invalid={lap.reason === 'invalid'}
-            hint={lap.reason === 'invalid' ? METRES_HINT : undefined}
             className="custom"
           />
         )}
 
-        <p className="lead">
-          <Lead goal={goal} race={race} lap={lap} result={result} name={name} clock={clock} />
-        </p>
+        {result && <p className="lead">Scroll to see splits</p>}
       </section>
 
       {result && (
@@ -91,22 +85,5 @@ export default function SplitCalculator() {
         </Card>
       )}
     </div>
-  )
-}
-
-// What the page can say from what's been entered, most basic need first.
-function Lead({ goal, race, lap, result, name, clock }) {
-  if (goal.invalid.hours || goal.invalid.minutes || goal.invalid.seconds) {
-    return 'Enter the time as numbers: whole hours and minutes, and seconds with up to two decimals.'
-  }
-  if (!goal.seconds) return 'Enter a target time to see the split for every lap.'
-  if (!race.meters) return 'Enter the race distance in metres.'
-  if (!lap.meters) return 'Enter the track length in metres.'
-  if (!result) return `That’s more than ${MAX_LAPS} laps. Check the race distance and the track length.`
-  return (
-    <>
-      {goal.rolled && <>Read as {clock}. </>}
-      A {clock} {name} is <b>{formatSplit(result.pace.perLap)} a lap</b> on a {formatMeters(lap.meters)} track.
-    </>
   )
 }

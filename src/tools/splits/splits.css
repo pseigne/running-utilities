@@ -1,39 +1,35 @@
-/* one centred column, about as wide as the original's six-inch card */
-.splits{max-width:620px;margin:0 auto}
+/* the original's order in the watch face: one centred column on the dark ground that asks for the
+   time, the race and the track, then the splits, with no cards */
+.splits{display:flex;flex-direction:column}
+.splits .herocard,.splits .card{--bg:var(--page);margin:0;padding:0;border-radius:0;background:none;box-shadow:none}
+.herocard.splits-card{display:flex;flex-direction:column;align-items:center;text-align:center}
+.splits-card h1{margin:12px 0 8px;font-size:34px}
+.ask{margin:24px 0 12px;font-size:20px;font-weight:600;font-stretch:var(--cond)}
+.ask-small{margin:20px 0 8px;font-size:13px;color:var(--ink-2)}
 
-/* the card asks top to bottom, everything centred */
-.herocard.splits-card{display:flex;flex-direction:column;align-items:center;text-align:center;padding:28px 24px 24px}
-.splits-card h1{margin:4px 0 8px}
-.ask{font-size:22px;font-weight:600;font-stretch:var(--cond);margin:20px 0 12px}
-.ask-small{font-size:14px;color:var(--ink-2);margin:24px 0 8px}
-
-/* the target time: three fields in a row, each labelled underneath */
-.timefield{display:flex;justify-content:center;gap:16px;min-width:0}
+/* the target time: three underlined fields in a row, each labelled underneath */
+.timefield{display:flex;justify-content:center;gap:12px;min-width:0}
 .timefield .field{align-items:center}
-.timefield .field-l{order:1;margin-top:6px;font-size:15px}
-.timefield .field.big input{font-size:48px;padding:8px 14px 10px;text-align:center}
+.timefield .field-l{order:1;margin-top:6px;font-size:13px}
+.timefield .field.big .field-box{border:0;border-bottom:1px solid var(--ring);border-radius:0;background:none}
+.timefield .field.big .field-box:focus-within{outline:none;border-bottom-color:var(--line)}
+.timefield .field[data-invalid] .field-box{border-width:0 0 2px;border-color:var(--line)}
+.timefield .field.big input{padding:4px 6px 6px;font-size:52px;font-stretch:78%;text-align:center}
 
-/* race distances wrap and centre; the track lengths share the card's width evenly */
-.splits-card .pillset{max-width:100%}
-.pills.wrapping{flex-wrap:wrap;justify-content:center;border-radius:22px}
-.splits-card .pillset:has(.even){width:100%}
+/* every race on show, four to a row and outlined; the track lengths share the width in a smaller row */
+.splits-card .pillset{width:100%}
+.pills.wrapping{display:grid;grid-template-columns:repeat(4, minmax(0, 1fr));gap:6px;width:100%;padding:0;background:none;border-radius:0}
+.pills.wrapping label{min-height:44px;padding:0 4px;box-shadow:inset 0 0 0 1px var(--ring);color:var(--ink);font-weight:600}
+.pills.wrapping label::after{inset:0}
+.pills.wrapping label:has(input:checked){box-shadow:none}
 .pills.even{display:flex;width:100%}
-.splits-card .custom{margin-top:14px;width:220px}
-.splits-card .custom .field-hint{text-align:center}
+.pills.even label{flex:1;font-size:14px}
+.splits-card .custom{margin-top:12px;width:220px}
 
-/* where the original said "scroll to see splits": what the numbers make, or what's still missing */
-.splits-card .lead{margin-top:24px;font-size:17px;color:var(--ink-2)}
-.splits-card .lead b{color:var(--ink)}
+/* the original's pointer to the table */
+.splits-card .lead{margin-top:28px;font-size:15px;color:var(--ink-2)}
 
+/* where to be at each lap, flat on the ground */
+.splits .card.splits-table{margin-top:28px}
+.splits-table .dt th,.splits-table .dt td{padding-left:4px;padding-right:4px}
 .tag{margin-left:8px;font-size:13px;font-weight:400;font-stretch:100%;color:var(--ink-2)}
-
-@media (max-width: 720px){
-  .herocard.splits-card{padding:20px 16px 18px}
-  .ask{font-size:20px;margin:16px 0 10px}
-  .timefield{gap:10px}
-  .timefield .field.big input{font-size:36px;padding:6px 8px 8px}
-  /* on phones the distances fill a grid the width of the card, four to a row */
-  .splits-card .pillset:has(.wrapping){width:100%}
-  .pills.wrapping{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
-  .pills.wrapping label{padding:0 6px}
-}

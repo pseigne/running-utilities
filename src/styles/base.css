@@ -13,9 +13,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .skip{position:fixed;left:16px;top:8px;z-index:40;display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:999px;background:var(--paper);color:#151515;font-weight:600;text-decoration:none;transform:translateY(calc(-100% - 16px))}
 .skip:focus{transform:none}
 
-/* the nav: a dark bar pinned to the top, with an orange curb and a white lane line under it. Its sides
-   line up with the page's content. */
-.top{--ink:var(--paper);--ink-2:#A9A69F;--bg:var(--nav);--page-sel:rgba(255,255,255,.08);position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:calc(10px + env(safe-area-inset-top, 0px)) max(40px, calc(50% - 580px)) 10px;background:var(--nav);color:var(--paper);box-shadow:inset 0 -3px 0 var(--track),0 1px 0 #fff}
+/* the nav: the tool switch, centred on the ground and pinned to the top */
+.top{--page-sel:#222221;position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:calc(16px + env(safe-area-inset-top, 0px)) 16px 12px;background:var(--page);color:var(--ink)}
 .mark{font-weight:600;font-stretch:var(--cond);font-size:20px;letter-spacing:-.005em;text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
 .mark-short{display:none}
 @media (max-width: 960px){ .mark-full{display:none} .mark-short{display:inline} }
@@ -23,7 +22,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .top.centred{justify-content:center}
 .top :focus-visible{outline-color:var(--accent)}
 
-.wrap{max-width:1240px;margin:0 auto;padding:20px 40px 56px}
+/* one column, the width of a phone, on every screen */
+.wrap{max-width:452px;margin:0 auto;padding:8px 16px 40px}
 main{min-width:0}
 main:focus{outline:none}
 
@@ -35,9 +35,9 @@ main:focus{outline:none}
 .pills a::after,.pills label::after{content:'';position:absolute;inset:-4px 0}
 .pills a:hover,.pills label:hover{color:var(--ink)}
 /* the current pill takes the surface's ink, with the surface's own colour for its words */
-.pills [aria-current],.pills label:has(input:checked){background:var(--ink);color:var(--bg);font-weight:600}
+.pills [aria-current],.pills [aria-current]:hover,.pills label:has(input:checked),.pills label:has(input:checked):hover{background:var(--ink);color:var(--bg);font-weight:600}
 .pills label:has(input:focus-visible){outline:2px solid var(--line);outline-offset:2px}
-.pl-short{display:none}
+.pl-full{display:none}
 
 h1{font-size:56px;line-height:1;font-weight:600;font-stretch:var(--cond);letter-spacing:-.01em}
 .dek{font-size:20px;max-width:60ch;margin-top:14px;text-wrap:pretty}
@@ -49,13 +49,9 @@ h1{font-size:56px;line-height:1;font-weight:600;font-stretch:var(--cond);letter-
   .press,.press:hover,.press:active{transition:none;transform:none}
 }
 @media (max-width: 720px){
-  .top{padding:calc(10px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px))}
   /* 44px to tap; the margins give back the extra 4px so the nav keeps its height */
   .top .mark{font-size:17px;margin:-2px 0}
-  /* phones keep the nav to one row with short tool names */
-  .pl-full{display:none} .pl-short{display:inline}
-  .top .pills a{padding:0 12px}
-  .wrap{padding:12px max(16px, env(safe-area-inset-right, 0px)) calc(40px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px))}
+  .wrap{padding:8px max(16px, env(safe-area-inset-right, 0px)) calc(40px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px))}
   h1{font-size:40px}
   .dek{font-size:18px}
   .source{margin-top:28px}

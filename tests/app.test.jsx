@@ -35,8 +35,8 @@ describe('the page', () => {
   it('opens on the mileage planner with no hash', () => {
     render(<App />)
     expect(shown()).toEqual(['weekly-mileage'])
-    expect(screen.getByRole('link', { name: 'Weekly Mileage Planner' }).getAttribute('aria-current')).toBe('page')
-    expect(screen.getByRole('link', { name: 'Track Split Calculator' }).hasAttribute('aria-current')).toBe(false)
+    expect(screen.getByRole('link', { name: 'Mileage' }).getAttribute('aria-current')).toBe('page')
+    expect(screen.getByRole('link', { name: 'Splits' }).hasAttribute('aria-current')).toBe(false)
     expect(document.title).toBe('Weekly Mileage Planner · Running Utilities')
   })
 
